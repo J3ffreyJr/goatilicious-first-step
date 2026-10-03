@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clientes | Painel Goatilicious</title>
+  <link rel="stylesheet" href="../shared/styles.css">
+</head>
+<body>
+  <header class="topo">
+    <h1>Goatilicious</h1>
+    <p>Painel interno</p>
+  </header>
+
+  <main class="largo">
+    <section class="cartao">
+      <h2>Clientes registados</h2>
+
+      <div class="barra">
+        <span id="contagem" class="contagem"></span>
+        <button type="button" id="btn-atualizar">Atualizar</button>
+      </div>
+
+      <div class="tabela-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Email</th>
+              <th>Telefone</th>
+              <th>Endereço</th>
+              <th>Registado em</th>
+            </tr>
+          </thead>
+          <tbody id="corpo-tabela"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="../shared/config.js"></script>
+  <script src="clientes.js"></script>
+</body>
+</html>

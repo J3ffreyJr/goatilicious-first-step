@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registo de Cliente | Goatilicious</title>
+  <link rel="stylesheet" href="../shared/styles.css">
+</head>
+<body>
+  <header class="topo">
+    <h1>Goatilicious</h1>
+    <p>Sorvetes de luxo</p>
+  </header>
+
+  <main>
+    <section class="cartao">
+      <h2>Crie a sua conta</h2>
+      <p>Registe-se para fazer os seus pedidos online.</p>
+
+      <form id="form-cadastro" novalidate>
+        <label for="nome">Nome completo
+          <input type="text" id="nome" name="nome" required autocomplete="name">
+        </label>
+
+        <label for="email">Email
+          <input type="email" id="email" name="email" required autocomplete="email">
+        </label>
+
+        <label for="telefone">Telefone
+          <input type="tel" id="telefone" name="telefone" placeholder="+258 84 000 0000" autocomplete="tel">
+        </label>
+
+        <label for="endereco">Endereço de entrega
+          <input type="text" id="endereco" name="endereco" autocomplete="street-address">
+        </label>
+
+        <button type="submit" id="btn-enviar">Registar</button>
+      </form>
+
+      <div id="mensagem" class="mensagem" role="alert" hidden></div>
+    </section>
+  </main>
+
+  <script src="../shared/config.js"></script>
+  <script src="cadastro.js"></script>
+</body>
+</html>
