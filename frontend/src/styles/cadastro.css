@@ -1,0 +1,227 @@
+@import './fonts.css';
+@import './base.css';
+@import './header.css';
+@import './decor.css';
+@import './responsive.css';
+
+/* Permitir scroll natural na página de cadastro */
+body.cadastro-page {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: auto;
+    min-height: 100vh;
+    min-height: 100svh;
+}
+
+.cadastro-container {
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 8rem 1.5rem 4rem;
+    position: relative;
+    z-index: 10;
+}
+
+.glass-card {
+    width: 100%;
+    max-width: 580px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-radius: 28px;
+    padding: 2.75rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Brilho decorativo sutil de fundo no topo do cartão */
+.glass-card::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: 100px;
+    background: radial-gradient(ellipse at center, rgba(223, 178, 113, 0.25) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.card-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.form-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-nav);
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-pink);
+    margin-bottom: 0.75rem;
+    background: rgba(223, 178, 113, 0.1);
+    padding: 0.35rem 0.9rem;
+    border-radius: 100px;
+    border: 1px solid rgba(223, 178, 113, 0.2);
+}
+
+.form-title {
+    font-family: var(--font-heading);
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    line-height: 1.1;
+    font-weight: 400;
+    color: #ffffff;
+    margin-bottom: 0.6rem;
+}
+
+.form-subtitle {
+    color: var(--muted-color);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    font-family: var(--font-main);
+    max-width: 440px;
+    margin: 0 auto;
+}
+
+.form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+
+@media (max-width: 600px) {
+    .glass-card {
+        padding: 2rem 1.5rem;
+        border-radius: 22px;
+    }
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+}
+
+.input-label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    font-family: var(--font-nav);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.input-field {
+    width: 100%;
+    padding: 13px 16px;
+    border-radius: 14px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    font-family: var(--font-main);
+    font-size: 0.95rem;
+    transition: all 0.25s ease;
+}
+
+.input-field::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: var(--accent-pink);
+    background: rgba(0, 0, 0, 0.55);
+    box-shadow: 0 0 20px rgba(223, 178, 113, 0.25);
+}
+
+.btn-submit {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    background: linear-gradient(135deg, #dfb271 0%, #b8823b 100%);
+    color: #1c0e07;
+    border: none;
+    padding: 15px 24px;
+    border-radius: 100px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+    box-shadow: 0 8px 25px rgba(184, 130, 59, 0.35);
+    font-family: var(--font-nav);
+    letter-spacing: 0.02em;
+}
+
+.btn-submit:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(184, 130, 59, 0.55);
+    filter: brightness(1.06);
+}
+
+.btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.card-footer-info {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--muted-color);
+    font-family: var(--font-main);
+}
+
+.card-footer-info a {
+    color: var(--accent-pink);
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.2s;
+}
+
+.card-footer-info a:hover {
+    text-decoration: underline;
+    opacity: 0.9;
+}
+
+.mensagem-box {
+    margin-top: 1.5rem;
+    padding: 14px 18px;
+    border-radius: 14px;
+    font-size: 0.92rem;
+    font-family: var(--font-main);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    backdrop-filter: blur(12px);
+    line-height: 1.4;
+    transition: all 0.3s ease;
+}
+
+.mensagem-box.sucesso {
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(74, 222, 128, 0.4);
+    color: #86efac;
+}
+
+.mensagem-box.erro {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(248, 113, 113, 0.4);
+    color: #fca5a5;
+}
