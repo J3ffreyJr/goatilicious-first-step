@@ -1,7 +1,10 @@
 package com.goatilicious.models;
 
+import java.math.BigDecimal;
+
 import com.goatilicious.enums.TamanhoProduto;
 import com.goatilicious.enums.TipoEstoque;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,8 +17,6 @@ import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-
-import java.math.BigDecimal;
 
 @Entity
 @Table(name = "produto", uniqueConstraints = @UniqueConstraint(columnNames = {"sabor", "tamanho"}))
