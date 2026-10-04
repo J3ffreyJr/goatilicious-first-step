@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Registo de Cliente | Goatilicious</title>
+  <meta name="description" content="Crie a sua conta Goatilicious e faça encomendas dos sorvetes artesanais de leite de cabra em Maputo.">
+  <meta name="theme-color" content="#1c0e07">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+
+  <!-- Fonte Galada pré-carregada -->
+  <link rel="preload" href="/node_modules/@fontsource/galada/files/galada-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+
+  <script type="module" src="./cadastro.js"></script>
+</head>
+<body class="cadastro-page">
+  <div id="bubbles-container" aria-hidden="true"></div>
+
+  <!-- Cabeçalho oficial com navegação e logotipo em Galada -->
+  <header class="header">
+    <a href="/" class="logo" aria-label="Goatilicious Página Inicial">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+        <path d="M8 14C9.5 16 14.5 16 16 14M9 9H9.01M15 9H15.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
+      <span>Goatilicious</span>
+    </a>
+    <nav class="nav glass" id="site-nav" aria-label="Navegação Principal">
+      <a href="/" class="nav-item">Início</a>
+      <a href="/#sabores" class="nav-item">Sabores</a>
+      <a href="/#origem" class="nav-item">O Nosso Leite</a>
+      <a href="/cliente/pedido.html" class="nav-item">Encomendas</a>
+      <a href="/admin/clientes.html" class="nav-item">Painel Staff</a>
+    </nav>
+    <div class="header-actions">
+      <a href="/" class="contact-btn" style="text-decoration: none; display: inline-flex; align-items: center;">Voltar ao Início</a>
+      <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Cartão Central Glassmorphism -->
+  <main class="cadastro-container">
+    <section class="glass-card">
+      <div class="card-header">
+        <span class="form-badge">Exclusivo • Goatilicious</span>
+        <h1 class="form-title">Crie a sua Conta</h1>
+        <p class="form-subtitle">Junte-se ao clube exclusivo Goatilicious e encomende os seus sorvetes artesanais com entregas personalizadas em Maputo.</p>
+      </div>
+
+      <form id="form-cadastro" class="form-grid" novalidate>
+        <label class="input-label" for="nome">
+          <span>Nome completo *</span>
+          <input type="text" id="nome" name="nome" class="input-field" placeholder="Ex.: Ana Manjate" required autocomplete="name">
+        </label>
+
+        <div class="form-row">
+          <label class="input-label" for="email">
+            <span>Email *</span>
+            <input type="email" id="email" name="email" class="input-field" placeholder="nome@exemplo.com" required autocomplete="email">
+          </label>
+
+          <label class="input-label" for="telefone">
+            <span>Telefone</span>
+            <input type="tel" id="telefone" name="telefone" class="input-field" placeholder="+258 84 000 0000" autocomplete="tel">
+          </label>
+        </div>
+
+        <label class="input-label" for="endereco">
+          <span>Endereço de entrega</span>
+          <input type="text" id="endereco" name="endereco" class="input-field" placeholder="Bairro / Av. Julius Nyerere, Maputo" autocomplete="street-address">
+        </label>
+
+        <button type="submit" id="btn-enviar" class="btn-submit">
+          <span>Registar Conta</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </form>
+
+      <div id="mensagem" class="mensagem-box" role="alert" hidden></div>
+
+      <div class="card-footer-info">
+        <p>Já possui conta ou deseja encomendar? <a href="/cliente/pedido.html">Fazer pedido diretamente &rarr;</a></p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

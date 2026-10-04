@@ -1,0 +1,67 @@
+:root {
+    --bg-color: #0a0a0a;
+    --text-color: #ffffff;
+    --accent-color: #ffffff;
+    --accent-pink: #dfb271;
+    --accent-ink: #2b170c;
+    --muted-color: rgba(255, 255, 255, 0.7);
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --font-main: 'Inter', sans-serif;
+    --font-heading: 'Galada', cursive;
+    --font-nav: 'Manrope', sans-serif;
+
+    /* Dynamic Background Variables */
+    --bg-inner: #b8823b;
+    --bg-mid: #4a2817;
+    --bg-outer: #1c0e07;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: radial-gradient(circle at center, var(--bg-inner) 0%, var(--bg-mid) 50%, var(--bg-outer) 100%);
+    color: var(--text-color);
+    font-family: var(--font-main);
+    overflow: hidden; /* Single-screen hero on desktop */
+    height: 100vh;
+    height: 100svh;
+    -webkit-font-smoothing: antialiased;
+    transition: background 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.blue-theme {
+    --bg-inner: #8e2b58;
+    --bg-mid: #3a1024;
+    --bg-outer: #14050d;
+}
+
+/* Typography */
+.main-title,
+.side-title {
+    font-family: var(--font-heading);
+    font-size: clamp(5rem, 10vw, 12rem);
+    line-height: 0.8;
+    font-weight: 400;
+    text-transform: none;
+    white-space: nowrap;
+    color: white;
+    letter-spacing: normal;
+}
+
+.outline {
+    color: var(--text-color);
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent-pink);
+    outline-offset: 3px;
+}
+
+button {
+    font: inherit;
+}
