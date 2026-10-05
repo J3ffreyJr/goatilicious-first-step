@@ -1,6 +1,6 @@
 import { FLAVORS } from '../config/scene.js';
 import { state, berryState } from '../state.js';
-import { setFlavorTexture } from './textures.js';
+import { setFlavorTexture, setLidColor } from './textures.js';
 
 // GSAP is only needed once a flavor is picked, so it's loaded on demand
 let gsap;
@@ -28,7 +28,7 @@ function setBodyTheme(flavor) {
   if (flavor.bodyClass) document.body.classList.add(flavor.bodyClass);
 }
 
-/** 720° can spin with motion blur; swaps theme + texture at the 360° peak. */
+/** 720° tub spin with motion blur; swaps theme + texture at the 360° peak. */
 async function spinCan(modelViewer, flavor) {
   const spin = { val: 0, blur: 0 };
   const onUpdate = () => {
@@ -39,6 +39,7 @@ async function spinCan(modelViewer, flavor) {
   await gsap.to(spin, { val: 360, blur: 15, duration: 0.6, ease: 'power2.in', onUpdate });
 
   setBodyTheme(flavor);
+  setLidColor(modelViewer, flavor.lidColor);
   await setFlavorTexture(modelViewer, flavor.texture);
 
   await gsap.to(spin, { val: 720, blur: 0, duration: 1.5, ease: 'back.out(0.7)', onUpdate });

@@ -71,7 +71,7 @@ export function startAnimationLoop(modelViewer) {
 
     // Write phase
     const theta = (currentMouse.x * can.tiltX + state.switchSpin).toFixed(2);
-    const phi = (90 + currentMouse.y * can.tiltY).toFixed(2);
+    const phi = (can.phi + currentMouse.y * can.tiltY).toFixed(2);
     const orbit = `${theta}deg ${phi}deg ${can.distance}`;
     if (orbit !== lastOrbit) {
       // Only touch the camera when it actually moves; each change triggers a WebGL render

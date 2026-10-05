@@ -1,19 +1,21 @@
 import { ASSETS } from './assets.js';
 
 /**
- * Flavor themes: background gradient stops, berry model and can texture.
- * `texture: null` means the texture embedded in the can model.
+ * Flavor themes: background gradient stops, berry model, tub label texture and lid color.
+ * `texture: null` means the texture embedded in the tub model.
  */
 export const FLAVORS = {
   classic: {
     colors: { inner: '#b8823b', mid: '#4a2817', outer: '#1c0e07' },
     berryModel: ASSETS.cherry,
     texture: null,
+    lidColor: [0.906, 0.773, 0.49, 1],
   },
   blue: {
     colors: { inner: '#8e2b58', mid: '#3a1024', outer: '#14050d' },
     berryModel: ASSETS.blueberry,
-    texture: ASSETS.blueTexture,
+    texture: ASSETS.mirtiloTexture,
+    lidColor: [0.088, 0.014, 0.296, 1],
     bodyClass: 'blue-theme',
   },
 };
@@ -48,7 +50,7 @@ export const BERRIES_FG = [
 
 export const MOTION = {
   mouseLerp: 0.05,
-  can: { tiltX: 40, tiltY: 20, distance: '380%' },
+  can: { tiltX: 40, tiltY: 20, phi: 76, distance: '380%' },
   parallax: { berriesFG: 60, berriesBG: -30, leaves: -15 },
   repulsion: { radius: 400, strength: -80, lerp: 0.1, spinBase: 0.2, spinBoost: 5 },
   berryFloat: { amplitude: 15, angle: 6, durations: [5, 7, 6, 8, 5.5, 6.5, 9, 11, 10] },

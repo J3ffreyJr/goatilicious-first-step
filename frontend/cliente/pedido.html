@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Fazer Pedido | Goatilicious</title>
+  <meta name="description" content="Encomende online os sorvetes artesanais de leite de cabra Goatilicious.">
+  <meta name="theme-color" content="#1c0e07">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/node_modules/@fontsource/galada/files/galada-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <script type="module" src="./pedido.js"></script>
+</head>
+<body class="cadastro-page">
+  <div id="bubbles-container" aria-hidden="true"></div>
+
+  <header class="header">
+    <a href="/" class="logo" aria-label="Goatilicious Página Inicial">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+        <path d="M8 14C9.5 16 14.5 16 16 14M9 9H9.01M15 9H15.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
+      <span>Goatilicious</span>
+    </a>
+    <nav class="nav glass" id="site-nav" aria-label="Navegação Principal">
+      <a href="/" class="nav-item">Início</a>
+      <a href="/#sabores" class="nav-item">Sabores</a>
+      <a href="/#origem" class="nav-item">O Nosso Leite</a>
+      <a href="/cliente/pedido.html" class="nav-item active">Encomendas</a>
+      <a href="/admin/index.html" class="nav-item">Painel Staff</a>
+    </nav>
+    <div class="header-actions">
+      <a href="/cliente/cadastro.html" class="contact-btn" style="text-decoration: none; display: inline-flex; align-items: center;">Criar Conta</a>
+      <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="cadastro-container">
+    <section class="glass-card larga">
+      <div class="card-header">
+        <span class="form-badge">Encomenda online</span>
+        <h1 class="form-title">Faça o seu Pedido</h1>
+        <p class="form-subtitle">Identifique-se com o email da sua conta e escolha os sabores e tamanhos.</p>
+      </div>
+
+      <!-- Passo 1: identificação -->
+      <form id="form-identificar" class="form-grid passo" novalidate>
+        <label class="input-label" for="email">
+          <span>O seu email *</span>
+          <input type="email" id="email" class="input-field" placeholder="nome@exemplo.com" required autocomplete="email">
+        </label>
+        <button type="submit" id="btn-identificar" class="btn-submit"><span>Continuar</span></button>
+        <p class="card-footer-info">Ainda não tem conta? <a href="/cliente/cadastro.html">Criar conta &rarr;</a></p>
+      </form>
+
+      <!-- Passo 2: escolha dos produtos -->
+      <div id="passo-pedido" class="passo" hidden>
+        <div class="saudacao">
+          <span>Olá, <strong id="nome-cliente"></strong></span>
+          <button type="button" id="btn-trocar" class="btn-link">Não sou eu</button>
+        </div>
+
+        <div id="catalogo"><p class="estado-texto">A carregar catálogo...</p></div>
+
+        <div class="resumo"><span>Total</span><strong id="total">0,00 MT</strong></div>
+        <button type="button" id="btn-enviar" class="btn-submit" disabled><span>Confirmar Pedido</span></button>
+      </div>
+
+      <div id="mensagem" class="mensagem-box" role="alert" hidden></div>
+    </section>
+  </main>
+</body>
+</html>

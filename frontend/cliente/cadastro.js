@@ -16,7 +16,10 @@ import { initMenu } from '../src/modules/menu.js';
     const iconeSucesso = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
     const iconeErro = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
 
-    mensagem.innerHTML = (tipo === 'sucesso' ? iconeSucesso : iconeErro) + `<span>${texto}</span>`;
+    mensagem.innerHTML = tipo === 'sucesso' ? iconeSucesso : iconeErro;
+    const span = document.createElement('span');
+    span.textContent = texto; // textContent: o nome vem do utilizador, nunca como HTML
+    mensagem.appendChild(span);
     mensagem.className = 'mensagem-box ' + tipo;
     mensagem.hidden = false;
   }
@@ -54,6 +57,7 @@ import { initMenu } from '../src/modules/menu.js';
       if (resposta.status === 201) {
         const cliente = await resposta.json();
         mostrarMensagem('Registo concluído com sucesso! Bem-vindo(a) à Goatilicious, ' + cliente.nome + '.', 'sucesso');
+        try { localStorage.setItem('goatilicious.cliente', JSON.stringify({ idCliente: cliente.idCliente, nome: cliente.nome })); } catch (e) { /* opcional */ }
         form.reset();
       } else if (resposta.status === 409) {
         mostrarMensagem('Este endereço de email já se encontra registado.', 'erro');

@@ -9,7 +9,9 @@ let wanted = null;
 function applyTexture(modelViewer, texture) {
   if (!modelViewer.model || !texture) return;
   modelViewer.model.materials.forEach((material) => {
-    material.pbrMetallicRoughness.baseColorTexture?.setTexture(texture);
+    const info = material.pbrMetallicRoughness.baseColorTexture;
+    // Only the label material has a texture; the lid keeps its plain color.
+    if (info?.texture) info.setTexture(texture);
   });
 }
 
@@ -24,6 +26,16 @@ function getTexture(modelViewer, url) {
     cache.set(url, promise);
   }
   return cache.get(url);
+}
+
+/** Paints the lid (the material without a label texture) in the flavor's color. */
+export function setLidColor(modelViewer, rgba) {
+  if (!modelViewer.model || !rgba) return;
+  modelViewer.model.materials.forEach((material) => {
+    if (!material.pbrMetallicRoughness.baseColorTexture?.texture) {
+      material.pbrMetallicRoughness.setBaseColorFactor(rgba);
+    }
+  });
 }
 
 /** Loads (if needed) and applies a flavor texture. */

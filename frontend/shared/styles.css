@@ -146,3 +146,71 @@ tbody tr:hover { background: var(--creme); }
   color: var(--cinza);
   padding: 24px 12px;
 }
+
+/* ---- Painel interno: navegação, formulários em grelha e atalhos ---- */
+nav.menu-staff {
+  background: var(--castanho);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 8px 10px;
+  flex-wrap: wrap;
+}
+nav.menu-staff a {
+  color: var(--creme);
+  text-decoration: none;
+  padding: 7px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+nav.menu-staff a:hover { background: rgba(255, 255, 255, 0.12); }
+nav.menu-staff a.ativo { background: var(--dourado); color: #fff; }
+
+main.largo .cartao + .cartao { margin-top: 24px; }
+
+.grelha-form { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+.grelha-form .inteira { grid-column: 1 / -1; }
+@media (max-width: 600px) { .grelha-form { grid-template-columns: 1fr; } }
+
+select {
+  width: 100%;
+  margin-top: 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--borda);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 1rem;
+  background: var(--creme);
+}
+
+.cartao { animation: entra 0.35s ease both; }
+@keyframes entra { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .cartao { animation: none; } }
+
+.atalhos { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.atalhos a {
+  display: block;
+  padding: 22px;
+  background: var(--creme);
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+  color: var(--castanho);
+  text-decoration: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.atalhos a:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(59, 42, 32, 0.12); }
+.atalhos strong { display: block; font-size: 1.15rem; }
+.atalhos span { color: var(--cinza); font-size: 0.9rem; }
+
+.linha-item {
+  display: grid;
+  grid-template-columns: 2fr 90px 40px;
+  gap: 8px;
+  align-items: end;
+  margin-top: 8px;
+}
+.linha-item button { margin-top: 0; padding: 10px; }
+button.secundario { background: transparent; color: var(--dourado-escuro); border: 1px solid var(--dourado); }
+button.secundario:hover:not(:disabled) { background: var(--creme); }
+.total-linha { margin-top: 16px; font-size: 1.1rem; text-align: right; }
