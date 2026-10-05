@@ -40,7 +40,7 @@ ModelViewerElement.meshoptDecoderLocation = 'data:text/javascript,';
 modelViewer.src = modelViewer.dataset.src;
 
 initFlavorSwitch(modelViewer);
-initTextures(modelViewer, [ASSETS.blueTexture]);
+initTextures(modelViewer, [ASSETS.mirtiloTexture]);
 startAnimationLoop(modelViewer);
 
 // The can is the hero; decorative models wait until it has loaded so they
