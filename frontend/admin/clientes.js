@@ -63,6 +63,55 @@
     }
   }
 
+
+  // ---- Registo de cliente pelo funcionário (mesmo endpoint do site) ----
+  const form = document.getElementById('form-cliente');
+  const botaoGuardar = document.getElementById('btn-guardar');
+  const mensagem = document.getElementById('mensagem');
+
+  function mostrarMensagem(texto, tipo) {
+    mensagem.textContent = texto;
+    mensagem.className = 'mensagem ' + tipo;
+    mensagem.hidden = false;
+  }
+
+  form.addEventListener('submit', async function (evento) {
+    evento.preventDefault();
+    mensagem.hidden = true;
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+
+    const c = form.elements;
+    botaoGuardar.disabled = true;
+    try {
+      const resposta = await fetch(API_BASE + '/clientes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nome: c.nome.value.trim(),
+          email: c.email.value.trim(),
+          telefone: c.telefone.value.trim(),
+          endereco: c.endereco.value.trim()
+        })
+      });
+      if (resposta.status === 201) {
+        const criado = await resposta.json();
+        mostrarMensagem('Cliente "' + criado.nome + '" registado (ID ' + criado.idCliente + ').', 'sucesso');
+        form.reset();
+        carregarClientes();
+      } else if (resposta.status === 409) {
+        mostrarMensagem('Este email já está registado.', 'erro');
+      } else if (resposta.status === 400) {
+        mostrarMensagem('Dados inválidos. Verifique o nome e o email.', 'erro');
+      } else {
+        mostrarMensagem('Erro inesperado (código ' + resposta.status + ').', 'erro');
+      }
+    } catch (erro) {
+      mostrarMensagem('Não foi possível conectar ao servidor. Verifique se o back-end está a correr.', 'erro');
+    } finally {
+      botaoGuardar.disabled = false;
+    }
+  });
+
   botaoAtualizar.addEventListener('click', carregarClientes);
   carregarClientes();
 })();

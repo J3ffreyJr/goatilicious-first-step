@@ -1,0 +1,64 @@
+@import './cadastro.css';
+
+/* Página "Fazer Pedido" — reutiliza o cartão de vidro do cadastro. */
+.glass-card.larga { max-width: 760px; }
+
+.passo { animation: passo-entra 0.45s ease both; }
+@keyframes passo-entra {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) { .passo { animation: none; } }
+
+.saudacao {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    margin-bottom: 1.5rem; padding: 0.8rem 1.1rem; border-radius: 14px;
+    background: rgba(223, 178, 113, 0.1); border: 1px solid rgba(223, 178, 113, 0.25);
+    font-family: var(--font-main); font-size: 0.95rem;
+}
+.btn-link {
+    background: none; border: none; color: var(--accent-pink); cursor: pointer;
+    font-family: var(--font-nav); font-size: 0.82rem; text-decoration: underline; padding: 0;
+}
+
+.sabor { margin-bottom: 1.6rem; }
+.sabor h2 {
+    font-family: var(--font-heading); font-weight: 400; font-size: 1.7rem;
+    color: #fff; margin-bottom: 0.6rem;
+}
+.linha-produto {
+    display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 1rem;
+    padding: 0.7rem 1rem; margin-bottom: 0.5rem; border-radius: 14px;
+    background: rgba(0, 0, 0, 0.28); border: 1px solid rgba(255, 255, 255, 0.08);
+    font-family: var(--font-main);
+}
+.linha-produto.ativa { border-color: rgba(223, 178, 113, 0.55); background: rgba(223, 178, 113, 0.08); }
+.linha-produto .tam { font-weight: 600; color: #fff; }
+.linha-produto .stock { display: block; font-size: 0.72rem; color: var(--muted-color); }
+.linha-produto .preco { color: var(--accent-pink); font-family: var(--font-nav); }
+
+.qtd { display: inline-flex; align-items: center; gap: 0.4rem; }
+.qtd button {
+    width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; line-height: 1;
+    background: rgba(255, 255, 255, 0.08); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: background 0.2s, transform 0.15s;
+}
+.qtd button:hover { background: rgba(223, 178, 113, 0.3); transform: scale(1.08); }
+.qtd output { min-width: 1.8rem; text-align: center; font-family: var(--font-nav); font-weight: 700; color: #fff; }
+
+.resumo {
+    display: flex; justify-content: space-between; align-items: center; margin-top: 1.2rem;
+    padding-top: 1.1rem; border-top: 1px solid rgba(255, 255, 255, 0.12);
+    font-family: var(--font-nav); font-size: 1.1rem; color: #fff;
+}
+.resumo strong { color: var(--accent-pink); font-size: 1.4rem; }
+
+.estado-texto { text-align: center; color: var(--muted-color); padding: 1.2rem 0; }
+
+@media (max-width: 600px) {
+    .linha-produto { grid-template-columns: 1fr auto; }
+    .linha-produto .preco { grid-column: 1; }
+}
+
+/* Garante que o atributo hidden vence os "display: flex" das classes acima. */
+.glass-card [hidden] { display: none !important; }

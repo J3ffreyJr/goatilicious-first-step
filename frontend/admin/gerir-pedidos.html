@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedidos | Painel Goatilicious</title>
+  <link rel="stylesheet" href="../shared/styles.css">
+</head>
+<body>
+  <header class="topo">
+    <h1>Goatilicious</h1>
+    <p>Painel interno</p>
+  </header>
+  <nav class="menu-staff" aria-label="Navegação do painel">
+    <a href="index.html">Início</a>
+    <a href="clientes.html">Clientes</a>
+    <a href="gerir-pedidos.html" class="ativo">Pedidos</a>
+  </nav>
+
+  <main class="largo">
+    <section class="cartao">
+      <h2>Registar pedido (telefone)</h2>
+      <form id="form-pedido" novalidate>
+        <label>Cliente *
+          <select id="cliente" required><option value="">A carregar...</option></select>
+        </label>
+        <p class="contagem">Cliente novo? <a href="clientes.html">Registe-o primeiro</a>.</p>
+
+        <label class="inteira">Itens *</label>
+        <div id="itens"></div>
+        <button type="button" id="btn-add" class="secundario">+ Adicionar item</button>
+
+        <p class="total-linha">Total: <strong id="total">0,00 MT</strong></p>
+        <button type="submit" id="btn-guardar">Registar pedido</button>
+      </form>
+      <div id="mensagem" class="mensagem" role="alert" hidden></div>
+    </section>
+
+    <section class="cartao">
+      <h2>Pedidos registados</h2>
+      <div class="barra">
+        <span id="contagem" class="contagem"></span>
+        <button type="button" id="btn-atualizar">Atualizar</button>
+      </div>
+      <div class="tabela-wrap">
+        <table>
+          <thead>
+            <tr><th>Nº</th><th>Cliente</th><th>Origem</th><th>Itens</th><th>Total</th><th>Estado</th><th>Data</th></tr>
+          </thead>
+          <tbody id="corpo-tabela"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="../shared/config.js"></script>
+  <script src="gerir-pedidos.js"></script>
+</body>
+</html>

@@ -11,8 +11,27 @@
     <h1>Goatilicious</h1>
     <p>Painel interno</p>
   </header>
+  <nav class="menu-staff" aria-label="Navegação do painel">
+    <a href="index.html">Início</a>
+    <a href="clientes.html" class="ativo">Clientes</a>
+    <a href="gerir-pedidos.html">Pedidos</a>
+  </nav>
 
   <main class="largo">
+    <section class="cartao">
+      <h2>Novo cliente</h2>
+      <form id="form-cliente" novalidate>
+        <div class="grelha-form">
+          <label>Nome completo *<input type="text" name="nome" required autocomplete="off"></label>
+          <label>Email *<input type="email" name="email" required autocomplete="off"></label>
+          <label>Telefone<input type="tel" name="telefone" autocomplete="off"></label>
+          <label>Endereço<input type="text" name="endereco" autocomplete="off"></label>
+        </div>
+        <button type="submit" id="btn-guardar">Registar cliente</button>
+      </form>
+      <div id="mensagem" class="mensagem" role="alert" hidden></div>
+    </section>
+
     <section class="cartao">
       <h2>Clientes registados</h2>
 

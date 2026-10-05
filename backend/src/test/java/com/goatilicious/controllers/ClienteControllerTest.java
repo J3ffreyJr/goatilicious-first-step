@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -108,5 +109,34 @@ class ClienteControllerTest {
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].nome").value("Ana"))
                 .andExpect(jsonPath("$[1].nome").value("Bruno"));
+    }
+
+    // --- Identificação do cliente no site (sem login): devolve só o essencial ---
+
+    @Test
+    void getPorEmailDeveRetornarApenasIdENome() throws Exception {
+        when(repository.findByEmail("ana@mail.com")).thenReturn(Optional.of(cliente(7L, "Ana", "ana@mail.com")));
+
+        mockMvc.perform(get("/api/clientes/por-email").param("email", "ana@mail.com"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.idCliente").value(7))
+                .andExpect(jsonPath("$.nome").value("Ana"))
+                .andExpect(jsonPath("$.email").doesNotExist())
+                .andExpect(jsonPath("$.telefone").doesNotExist())
+                .andExpect(jsonPath("$.endereco").doesNotExist());
+    }
+
+    @Test
+    void getPorEmailInexistenteDeveRetornar404() throws Exception {
+        when(repository.findByEmail("x@mail.com")).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/api/clientes/por-email").param("email", "x@mail.com"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getPorEmailSemParametroDeveRetornar400() throws Exception {
+        mockMvc.perform(get("/api/clientes/por-email"))
+                .andExpect(status().isBadRequest());
     }
 }
