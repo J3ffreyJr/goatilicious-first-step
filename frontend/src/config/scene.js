@@ -9,7 +9,7 @@ export const FLAVORS = {
     colors: { inner: '#b8823b', mid: '#4a2817', outer: '#1c0e07' },
     berryModel: ASSETS.cherry,
     texture: null,
-    lidColor: [0.906, 0.773, 0.49, 1],
+    lidColor: [0.434, 0.007, 0.03, 1],
   },
   blue: {
     colors: { inner: '#8e2b58', mid: '#3a1024', outer: '#14050d' },

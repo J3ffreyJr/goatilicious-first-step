@@ -43,7 +43,7 @@ class CarregadorProdutosTest {
         List<Produto> produtos = captor.getValue();
 
         Set<String> sabores = produtos.stream().map(Produto::getSabor).collect(Collectors.toSet());
-        assertEquals(Set.of("Baunilha & Mel", "Mirtilo Silvestre"), sabores);
+        assertEquals(Set.of("Cereja", "Mirtilo Silvestre"), sabores);
         assertEquals(sabores.size() * TamanhoProduto.values().length, produtos.size());
         assertTrue(produtos.stream().allMatch(p -> p.getPrecoUnitario().signum() > 0));
         assertTrue(produtos.stream().allMatch(p -> p.getTipoEstoque() != null));

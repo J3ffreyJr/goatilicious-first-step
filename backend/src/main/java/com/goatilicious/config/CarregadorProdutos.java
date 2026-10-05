@@ -19,7 +19,7 @@ import java.util.Map;
 @Component
 public class CarregadorProdutos implements CommandLineRunner {
 
-    private static final List<String> SABORES = List.of("Baunilha & Mel", "Mirtilo Silvestre");
+    private static final List<String> SABORES = List.of("Cereja", "Mirtilo Silvestre");
 
     private static final Map<TamanhoProduto, BigDecimal> PRECOS = Map.of(
             TamanhoProduto.ML_125, new BigDecimal("120.00"),

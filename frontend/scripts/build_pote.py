@@ -3,7 +3,7 @@
 Gera o pote de sorvete 3D da Goatilicious (substitui a lata).
 
 Saídas (relativas a frontend/):
-  public/assets/models/pote-sorvete.glb      -> modelo com o rótulo "Baunilha & Mel" embutido
+  public/assets/models/pote-sorvete.glb      -> modelo com o rótulo "Cereja" embutido
   public/assets/textures/pote-mirtilo.webp   -> rótulo "Mirtilo Silvestre" (trocado em runtime)
   scripts/.cache/pote-<sabor>.glb            -> um GLB por sabor (usado só para gerar as miniaturas)
 
@@ -35,11 +35,11 @@ SS = 2                      # supersampling do rótulo
 SEGMENTS = 96
 
 FLAVORS = {
-    "baunilha": dict(
-        nome=("Baunilha", "& Mel"),
-        top=(253, 245, 226), bottom=(240, 217, 168),
-        ink=(74, 40, 23), accent=(205, 140, 34), accent2=(150, 92, 24),
-        rim=(255, 249, 232), lid=(244, 227, 186),
+    "cereja": dict(
+        nome=("Cereja", None),
+        top=(255, 241, 241), bottom=(246, 196, 202),
+        ink=(84, 16, 32), accent=(190, 24, 52), accent2=(122, 14, 38),
+        rim=(255, 247, 247), lid=(176, 20, 48),
     ),
     "mirtilo": dict(
         nome=("Mirtilo", "Silvestre"),
@@ -111,6 +111,18 @@ def berry(draw, cx, cy, r, base, hi, dark):
         draw.line((s(cx), s(cy + r * 0.12), s(cx + r * 0.32 * math.cos(a)), s(cy + r * 0.12 + r * 0.32 * math.sin(a))), fill=dark, width=s(3))
 
 
+def cherries(draw, cx, cy, r, base, hi, dark, stem):
+    """Par de cerejas com cabinhos que se juntam no topo."""
+    tops = (cx, cy - r * 3.1)
+    for dx in (-r * 0.95, r * 0.95):
+        ex, ey = cx + dx, cy
+        draw.line([(s(ex), s(ey - r * 0.9)), (s(cx + dx * 0.55), s(cy - r * 2.2)), (s(tops[0]), s(tops[1]))], fill=stem, width=s(4))
+    for dx in (-r * 0.95, r * 0.95):
+        ex = cx + dx
+        draw.ellipse((s(ex - r), s(cy - r), s(ex + r), s(cy + r)), fill=base, outline=dark, width=s(3))
+        draw.ellipse((s(ex - r * 0.6), s(cy - r * 0.62), s(ex - r * 0.2), s(cy - r * 0.26)), fill=hi)
+
+
 def leaf(draw, cx, cy, length, angle, fill, vein):
     a = math.radians(angle)
     w = length * 0.28
@@ -174,18 +186,21 @@ def make_label(key):
     draw_text_centered(d, cx, 330, "GELADO ARTESANAL DE LEITE DE CABRA", m_small, cfg["ink"], spacing=3)
 
     # nome do sabor
-    draw_text_centered(d, cx, 450, cfg["nome"][0], g_name, cfg["accent"])
-    draw_text_centered(d, cx, 566, cfg["nome"][1], g_name, cfg["accent"])
+    if cfg["nome"][1]:
+        draw_text_centered(d, cx, 450, cfg["nome"][0], g_name, cfg["accent"])
+        draw_text_centered(d, cx, 566, cfg["nome"][1], g_name, cfg["accent"])
+    else:  # nome de uma só palavra: maior e centrado na zona do sabor
+        draw_text_centered(d, cx, 535, cfg["nome"][0], load_font("galada", 400, 190), cfg["accent"])
     draw_text_centered(d, cx, 628, "MAPUTO  ·  MOÇAMBIQUE", m_tiny, cfg["ink"], spacing=4)
 
     # decoração por sabor (dos dois lados do texto)
-    if key == "baunilha":
+    if key == "cereja":
+        leafc, vein = (70, 138, 84), (40, 92, 58)
         for side in (-1, 1):
             bx = cx + side * 395
-            for dx, dy, r in ((0, 440, 34), (side * 58, 408, 34), (-side * 6, 506, 34), (side * 60, 474, 34), (side * 2, 372, 34)):
-                hexagon(d, bx + dx, dy, r, (250, 214, 120), cfg["accent2"])
-            flower(d, bx - side * 56, 560, 36, (255, 252, 244), cfg["accent"])
-            flower(d, bx + side * 60, 270, 28, (255, 252, 244), cfg["accent"])
+            leaf(d, bx, 440, 96, -150 if side < 0 else -30, leafc, vein)
+            cherries(d, bx, 520, 40, (196, 22, 52), (255, 150, 160), (96, 8, 28), (92, 64, 36))
+            cherries(d, bx + side * 62, 400, 30, (196, 22, 52), (255, 150, 160), (96, 8, 28), (92, 64, 36))
     else:
         leafc, vein = (70, 138, 84), (40, 92, 58)
         for side in (-1, 1):
@@ -366,7 +381,7 @@ def main():
         label.save(CACHE / f"rotulo-{key}.png")
         size = write_glb(CACHE / f"pote-{key}.glb", label, cfg["lid"])
         print(f"{key}: GLB {size/1024:.0f} KB")
-        if key == "baunilha":
+        if key == "cereja":
             write_glb(OUT_MODEL, label, cfg["lid"])
         else:
             OUT_TEX.parent.mkdir(parents=True, exist_ok=True)

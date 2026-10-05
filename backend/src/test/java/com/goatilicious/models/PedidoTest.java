@@ -12,7 +12,7 @@ class PedidoTest {
 
     private ItemPedido item(String preco, int quantidade) {
         Produto p = new Produto();
-        p.setSabor("Baunilha & Mel");
+        p.setSabor("Cereja");
         p.setTamanho(TamanhoProduto.ML_500);
         p.setTipoEstoque(TipoEstoque.PRONTA_ENTREGA);
         p.setPrecoUnitario(new BigDecimal(preco));
