@@ -37,7 +37,7 @@ class ProdutoRepositoryTest {
     @Test
     void deveListarTodosOsProdutos() {
         repository.save(produto("Mirtilo Silvestre", TamanhoProduto.ML_500, "350.00"));
-        repository.save(produto("Baunilha & Mel", TamanhoProduto.ML_500, "350.00"));
+        repository.save(produto("Cereja", TamanhoProduto.ML_500, "350.00"));
 
         assertEquals(2, repository.findAll().size());
     }

@@ -53,7 +53,7 @@ class PedidoControllerTest {
 
         Produto p = new Produto();
         p.setIdProduto(10L);
-        p.setSabor("Baunilha & Mel");
+        p.setSabor("Cereja");
         p.setTamanho(TamanhoProduto.ML_500);
         p.setTipoEstoque(TipoEstoque.PRONTA_ENTREGA);
         p.setPrecoUnitario(new BigDecimal("350.00"));
@@ -94,7 +94,7 @@ class PedidoControllerTest {
                 .andExpect(jsonPath("$.cliente.nome").value("Ana"))
                 .andExpect(jsonPath("$.itens.length()").value(1))
                 .andExpect(jsonPath("$.itens[0].quantidade").value(2))
-                .andExpect(jsonPath("$.itens[0].produto.sabor").value("Baunilha & Mel"))
+                .andExpect(jsonPath("$.itens[0].produto.sabor").value("Cereja"))
                 .andExpect(jsonPath("$.total").value(700.0));
     }
 

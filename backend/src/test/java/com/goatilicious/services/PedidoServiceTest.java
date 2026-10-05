@@ -46,7 +46,7 @@ class PedidoServiceTest {
     private PedidoService service;
 
     private Cliente cliente;
-    private Produto baunilha;
+    private Produto cereja;
     private Produto mirtilo;
 
     @BeforeEach
@@ -56,7 +56,7 @@ class PedidoServiceTest {
         cliente.setNome("Ana");
         cliente.setEmail("ana@mail.com");
 
-        baunilha = produto(10L, "Baunilha & Mel", "350.00");
+        cereja = produto(10L, "Cereja", "350.00");
         mirtilo = produto(11L, "Mirtilo Silvestre", "650.00");
     }
 
@@ -79,7 +79,7 @@ class PedidoServiceTest {
     @Test
     void registrarDeveCriarPedidoPendenteComPrecosAplicados() {
         when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
-        when(produtoRepository.findById(10L)).thenReturn(Optional.of(baunilha));
+        when(produtoRepository.findById(10L)).thenReturn(Optional.of(cereja));
         when(produtoRepository.findById(11L)).thenReturn(Optional.of(mirtilo));
         when(pedidoRepository.save(any(Pedido.class))).thenAnswer(inv -> inv.getArgument(0));
 
@@ -98,11 +98,11 @@ class PedidoServiceTest {
     @Test
     void precoAplicadoNaoMudaQuandoOPrecoDoProdutoMudaDepois() {
         when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
-        when(produtoRepository.findById(10L)).thenReturn(Optional.of(baunilha));
+        when(produtoRepository.findById(10L)).thenReturn(Optional.of(cereja));
         when(pedidoRepository.save(any(Pedido.class))).thenAnswer(inv -> inv.getArgument(0));
 
         Pedido pedido = service.registrar(new PedidoRequest(1L, OrigemPedido.ONLINE, List.of(new ItemRequest(10L, 1))));
-        baunilha.setPrecoUnitario(new BigDecimal("999.00"));
+        cereja.setPrecoUnitario(new BigDecimal("999.00"));
 
         assertEquals(0, new BigDecimal("350.00").compareTo(pedido.getItens().get(0).getPrecoAplicado()));
     }
@@ -110,7 +110,7 @@ class PedidoServiceTest {
     @Test
     void registrarDeveGravarPeloRepositorio() {
         when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
-        when(produtoRepository.findById(10L)).thenReturn(Optional.of(baunilha));
+        when(produtoRepository.findById(10L)).thenReturn(Optional.of(cereja));
         when(pedidoRepository.save(any(Pedido.class))).thenAnswer(inv -> inv.getArgument(0));
 
         service.registrar(new PedidoRequest(1L, OrigemPedido.ONLINE, List.of(new ItemRequest(10L, 1))));
@@ -134,7 +134,7 @@ class PedidoServiceTest {
     @Test
     void produtoInexistenteDeveLancar404ENaoGravar() {
         when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
-        when(produtoRepository.findById(10L)).thenReturn(Optional.of(baunilha));
+        when(produtoRepository.findById(10L)).thenReturn(Optional.of(cereja));
         when(produtoRepository.findById(11L)).thenReturn(Optional.empty());
 
         ResponseStatusException erro = assertThrows(ResponseStatusException.class,

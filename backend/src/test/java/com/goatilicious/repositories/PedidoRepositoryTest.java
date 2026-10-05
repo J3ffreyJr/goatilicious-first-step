@@ -42,7 +42,7 @@ class PedidoRepositoryTest {
         cliente = clienteRepository.save(c);
 
         Produto p = new Produto();
-        p.setSabor("Baunilha & Mel");
+        p.setSabor("Cereja");
         p.setTamanho(TamanhoProduto.ML_500);
         p.setPrecoUnitario(new BigDecimal("350.00"));
         p.setTipoEstoque(TipoEstoque.PRONTA_ENTREGA);
