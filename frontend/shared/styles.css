@@ -214,3 +214,9 @@ select {
 button.secundario { background: transparent; color: var(--dourado-escuro); border: 1px solid var(--dourado); }
 button.secundario:hover:not(:disabled) { background: var(--creme); }
 .total-linha { margin-top: 16px; font-size: 1.1rem; text-align: right; }
+
+/* ---- Faturas e revisão de pedidos ---- */
+td button { margin-top: 0; padding: 6px 12px; font-size: 0.85rem; }
+.linha-item .rotulo-item { align-self: center; }
+.selo { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.8rem; background: var(--creme); border: 1px solid var(--borda); }
+.selo.final { background: var(--sucesso-bg); color: var(--sucesso-txt); border-color: transparent; }

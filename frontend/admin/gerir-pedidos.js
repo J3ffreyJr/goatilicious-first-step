@@ -1,7 +1,8 @@
 (function () {
   const TAMANHOS = { ML_125: '125 ml', ML_500: '500 ml', L_1: '1 L', L_5: '5 L' };
   const ORIGENS = { ONLINE: 'Online', TELEFONE: 'Telefone' };
-  const COLUNAS = 7;
+  const COLUNAS = 8;
+  const CONDICOES = { A_VISTA: 'À vista', CARTAO: 'Cartão', PAGO_NA_ENTREGA: 'Pagamento na entrega' };
 
   const selCliente = document.getElementById('cliente');
   const form = document.getElementById('form-pedido');
@@ -15,6 +16,7 @@
   const btnAtualizar = document.getElementById('btn-atualizar');
 
   let produtos = [];
+  let pedidosPorId = {};
 
   function mt(v) {
     return Number(v).toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' MT';
@@ -173,6 +175,8 @@
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const pedidos = await r.json();
       pedidos.sort(function (a, b) { return b.idPedido - a.idPedido; });
+      pedidosPorId = {};
+      pedidos.forEach(function (p) { pedidosPorId[p.idPedido] = p; });
 
       if (pedidos.length === 0) {
         mostrarEstado('Ainda não há pedidos registados.');
@@ -186,6 +190,14 @@
             td.textContent = v == null ? '' : v;   // textContent: nunca interpreta HTML
             tr.appendChild(td);
           });
+          const acoes = document.createElement('td');
+          if (p.status === 'PENDENTE') {
+            const b = document.createElement('button');
+            b.type = 'button'; b.textContent = 'Revisar';
+            b.addEventListener('click', function () { abrirRevisao(p.idPedido); });
+            acoes.appendChild(b);
+          }
+          tr.appendChild(acoes);
           corpo.appendChild(tr);
         });
       }
@@ -196,6 +208,156 @@
       btnAtualizar.disabled = false;
     }
   }
+
+  // ---------- revisão do pedido (itens + condições de pagamento) ----------
+  const painel = document.getElementById('painel-revisao');
+  const revTitulo = document.getElementById('rev-titulo');
+  const revItensEl = document.getElementById('rev-itens');
+  const revProduto = document.getElementById('rev-produto');
+  const revCondicao = document.getElementById('rev-condicao');
+  const revTotal = document.getElementById('rev-total');
+  const revAdd = document.getElementById('rev-add');
+  const revFinalizar = document.getElementById('rev-finalizar');
+  const revCancelar = document.getElementById('rev-cancelar');
+  const revMensagem = document.getElementById('rev-mensagem');
+
+  let revPedidoId = null;
+  let revItens = [];   // { produtoId, quantidade, preco, rotulo }
+
+  function mostrarMensagemRev(texto, tipo) {
+    revMensagem.textContent = texto;
+    revMensagem.className = 'mensagem ' + tipo;
+    revMensagem.hidden = false;
+  }
+
+  function nomeProduto(p) {
+    return p.sabor + ' ' + (TAMANHOS[p.tamanho] || p.tamanho);
+  }
+
+  function totalRevisao() {
+    return revItens.reduce(function (soma, i) { return soma + i.quantidade * Number(i.preco); }, 0);
+  }
+
+  function desenharRevisao() {
+    revItensEl.replaceChildren();
+    revItens.forEach(function (item) {
+      const linha = document.createElement('div');
+      linha.className = 'linha-item';
+
+      const rotulo = document.createElement('span');
+      rotulo.className = 'rotulo-item';
+      rotulo.textContent = item.rotulo + ' — ' + mt(item.preco);
+
+      const qtd = document.createElement('input');
+      qtd.type = 'number'; qtd.min = '1'; qtd.max = '99'; qtd.value = String(item.quantidade);
+      qtd.setAttribute('aria-label', 'Quantidade de ' + item.rotulo);
+      qtd.addEventListener('input', function () {
+        item.quantidade = parseInt(qtd.value, 10) || 0;
+        revTotal.textContent = mt(totalRevisao());
+      });
+
+      const remover = document.createElement('button');
+      remover.type = 'button'; remover.className = 'secundario'; remover.textContent = '×';
+      remover.setAttribute('aria-label', 'Remover ' + item.rotulo);
+      remover.disabled = revItens.length <= 1;
+      remover.addEventListener('click', function () {
+        revItens = revItens.filter(function (x) { return x !== item; });
+        desenharRevisao();
+      });
+
+      linha.append(rotulo, qtd, remover);
+      revItensEl.appendChild(linha);
+    });
+
+    // só oferece produtos que ainda não estão no pedido
+    revProduto.replaceChildren();
+    produtos.filter(function (p) {
+      return !revItens.some(function (i) { return i.produtoId === p.idProduto; });
+    }).forEach(function (p) {
+      const o = document.createElement('option');
+      o.value = p.idProduto;
+      o.textContent = rotuloProduto(p);
+      revProduto.appendChild(o);
+    });
+    revAdd.disabled = revProduto.options.length === 0;
+    revTotal.textContent = mt(totalRevisao());
+  }
+
+  function abrirRevisao(idPedido) {
+    const pedido = pedidosPorId[idPedido];
+    if (!pedido) return;
+    revPedidoId = idPedido;
+    revItens = (pedido.itens || []).map(function (i) {
+      return {
+        produtoId: i.produto.idProduto,
+        quantidade: i.quantidade,
+        preco: i.precoAplicado,   // preço congelado do pedido
+        rotulo: nomeProduto(i.produto)
+      };
+    });
+    revTitulo.textContent = 'Rever pedido #' + idPedido + ' — ' + (pedido.cliente ? pedido.cliente.nome : '');
+    revCondicao.value = 'A_VISTA';
+    revMensagem.hidden = true;
+    desenharRevisao();
+    painel.hidden = false;
+    painel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function fecharRevisao() {
+    painel.hidden = true;
+    revPedidoId = null;
+    revItens = [];
+  }
+
+  revAdd.addEventListener('click', function () {
+    const p = produtos.find(function (x) { return String(x.idProduto) === revProduto.value; });
+    if (!p) return;
+    revItens.push({ produtoId: p.idProduto, quantidade: 1, preco: p.precoUnitario, rotulo: nomeProduto(p) });
+    desenharRevisao();
+  });
+
+  revCancelar.addEventListener('click', fecharRevisao);
+
+  revFinalizar.addEventListener('click', async function () {
+    revMensagem.hidden = true;
+    if (revItens.length === 0 || revItens.some(function (i) { return !(i.quantidade >= 1); })) {
+      mostrarMensagemRev('Cada item precisa de uma quantidade de pelo menos 1.', 'erro');
+      return;
+    }
+
+    revFinalizar.disabled = true;
+    try {
+      const r = await fetch(API_BASE + '/pedidos/' + revPedidoId + '/revisao', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          condicaoPagamento: revCondicao.value,
+          itens: revItens.map(function (i) { return { produtoId: i.produtoId, quantidade: i.quantidade }; })
+        })
+      });
+      if (r.ok) {
+        const f = await r.json();
+        const idRevisto = revPedidoId;
+        fecharRevisao();
+        mostrarMensagem('Pedido #' + idRevisto + ' revisto. Factura final: ' + mt(f.valorTotal)
+          + ' (' + (CONDICOES[f.condicaoPagamento] || f.condicaoPagamento) + ').', 'sucesso');
+        carregarPedidos();
+      } else if (r.status === 409) {
+        mostrarMensagemRev('Este pedido já foi revisto.', 'erro');
+        carregarPedidos();
+      } else if (r.status === 404) {
+        mostrarMensagemRev('Pedido ou produto não encontrado.', 'erro');
+      } else if (r.status === 400) {
+        mostrarMensagemRev('Revisão inválida. Verifique os produtos (sem repetidos) e as quantidades.', 'erro');
+      } else {
+        mostrarMensagemRev('Erro inesperado (código ' + r.status + ').', 'erro');
+      }
+    } catch (e) {
+      mostrarMensagemRev('Não foi possível conectar ao servidor.', 'erro');
+    } finally {
+      revFinalizar.disabled = false;
+    }
+  });
 
   btnAtualizar.addEventListener('click', carregarPedidos);
   carregarFormulario();

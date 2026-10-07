@@ -20,6 +20,7 @@ export default defineConfig({
         adminIndex: resolve(import.meta.dirname, 'admin/index.html'),
         adminClientes: resolve(import.meta.dirname, 'admin/clientes.html'),
         adminPedidos: resolve(import.meta.dirname, 'admin/gerir-pedidos.html'),
+        adminFacturas: resolve(import.meta.dirname, 'admin/facturas.html'),
       },
     },
   },

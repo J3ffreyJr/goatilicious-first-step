@@ -41,6 +41,8 @@ class PedidoServiceTest {
     private ClienteRepository clienteRepository;
     @Mock
     private ProdutoRepository produtoRepository;
+    @Mock
+    private FacturaService facturaService;
 
     @InjectMocks
     private PedidoService service;
@@ -118,6 +120,27 @@ class PedidoServiceTest {
         ArgumentCaptor<Pedido> captor = ArgumentCaptor.forClass(Pedido.class);
         verify(pedidoRepository).save(captor.capture());
         assertEquals(OrigemPedido.ONLINE, captor.getValue().getOrigem());
+    }
+
+    @Test
+    void registrarGeraFacturaRascunhoParaOPedidoGravado() {
+        when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
+        when(produtoRepository.findById(10L)).thenReturn(Optional.of(cereja));
+        when(pedidoRepository.save(any(Pedido.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Pedido pedido = service.registrar(new PedidoRequest(1L, OrigemPedido.TELEFONE, List.of(new ItemRequest(10L, 1))));
+
+        verify(facturaService).gerarRascunho(pedido);
+    }
+
+    @Test
+    void clienteInexistenteNaoGeraFactura() {
+        when(clienteRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ResponseStatusException.class,
+                () -> service.registrar(pedidoDeDoisItens(OrigemPedido.ONLINE)));
+
+        verify(facturaService, never()).gerarRascunho(any());
     }
 
     @Test
