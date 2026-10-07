@@ -15,6 +15,7 @@
     <a href="index.html">Início</a>
     <a href="clientes.html">Clientes</a>
     <a href="gerir-pedidos.html" class="ativo">Pedidos</a>
+    <a href="facturas.html">Facturas</a>
   </nav>
 
   <main class="largo">
@@ -45,11 +46,33 @@
       <div class="tabela-wrap">
         <table>
           <thead>
-            <tr><th>Nº</th><th>Cliente</th><th>Origem</th><th>Itens</th><th>Total</th><th>Estado</th><th>Data</th></tr>
+            <tr><th>Nº</th><th>Cliente</th><th>Origem</th><th>Itens</th><th>Total</th><th>Estado</th><th>Data</th><th>Ações</th></tr>
           </thead>
           <tbody id="corpo-tabela"></tbody>
         </table>
       </div>
+    </section>
+
+    <section class="cartao" id="painel-revisao" hidden>
+      <h2 id="rev-titulo">Rever pedido</h2>
+      <div id="rev-itens"></div>
+      <label>Adicionar produto
+        <select id="rev-produto"></select>
+      </label>
+      <button type="button" id="rev-add" class="secundario">+ Adicionar ao pedido</button>
+
+      <label>Condições de pagamento
+        <select id="rev-condicao">
+          <option value="A_VISTA">À vista</option>
+          <option value="CARTAO">Cartão</option>
+          <option value="PAGO_NA_ENTREGA">Pagamento na entrega</option>
+        </select>
+      </label>
+
+      <p class="total-linha">Total: <strong id="rev-total">0,00 MT</strong></p>
+      <button type="button" id="rev-finalizar">Finalizar revisão</button>
+      <button type="button" id="rev-cancelar" class="secundario">Cancelar</button>
+      <div id="rev-mensagem" class="mensagem" role="alert" hidden></div>
     </section>
   </main>
 

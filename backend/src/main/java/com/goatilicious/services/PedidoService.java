@@ -22,13 +22,16 @@ public class PedidoService {
     private final PedidoRepository pedidoRepository;
     private final ClienteRepository clienteRepository;
     private final ProdutoRepository produtoRepository;
+    private final FacturaService facturaService;
 
     public PedidoService(PedidoRepository pedidoRepository,
                          ClienteRepository clienteRepository,
-                         ProdutoRepository produtoRepository) {
+                         ProdutoRepository produtoRepository,
+                         FacturaService facturaService) {
         this.pedidoRepository = pedidoRepository;
         this.clienteRepository = clienteRepository;
         this.produtoRepository = produtoRepository;
+        this.facturaService = facturaService;
     }
 
     @Transactional
@@ -52,7 +55,9 @@ public class PedidoService {
             pedido.adicionarItem(item);
         }
 
-        return pedidoRepository.save(pedido);
+        Pedido gravado = pedidoRepository.save(pedido);
+        facturaService.gerarRascunho(gravado);
+        return gravado;
     }
 
     public List<Pedido> listar() {
