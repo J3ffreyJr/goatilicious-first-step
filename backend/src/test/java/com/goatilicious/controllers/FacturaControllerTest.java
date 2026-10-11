@@ -8,10 +8,13 @@ import com.goatilicious.enums.OrigemPedido;
 import com.goatilicious.enums.TamanhoProduto;
 import com.goatilicious.enums.TipoEstoque;
 import com.goatilicious.models.Cliente;
+import com.goatilicious.models.EnvioFactura;
 import com.goatilicious.models.Factura;
 import com.goatilicious.models.ItemPedido;
 import com.goatilicious.models.Pedido;
 import com.goatilicious.models.Produto;
+import com.goatilicious.services.EnvioFacturaService;
+import com.goatilicious.services.FacturaPdfService;
 import com.goatilicious.services.FacturaService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +28,17 @@ import org.springframework.web.server.ResponseStatusException;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -45,11 +52,16 @@ class FacturaControllerTest {
 
     @MockBean
     private FacturaService service;
+    @MockBean
+    private FacturaPdfService pdfService;
+    @MockBean
+    private EnvioFacturaService envioService;
 
     private Factura facturaExemplo(Long id) {
         Cliente c = new Cliente();
         c.setIdCliente(1L);
         c.setNome("Ana");
+        c.setEmail("ana@mail.com");
 
         Produto p = new Produto();
         p.setIdProduto(10L);
@@ -102,6 +114,7 @@ class FacturaControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.idFactura").value(7))
                 .andExpect(jsonPath("$.idPedido").value(5))
+                .andExpect(jsonPath("$.emailCliente").value("ana@mail.com"))
                 .andExpect(jsonPath("$.valorTotal").value(700.0))
                 .andExpect(jsonPath("$.condicaoPagamento").value("A_VISTA"))
                 .andExpect(jsonPath("$.statusPagamento").value("PENDENTE"));
@@ -164,5 +177,101 @@ class FacturaControllerTest {
 
         mockMvc.perform(put("/api/pedidos/5/revisao").contentType(MediaType.APPLICATION_JSON).content(json(revisaoValida())))
                 .andExpect(status().isConflict());
+    }
+
+    // ---------- PDF ----------
+
+    @Test
+    void getPdfDevolvePdfComCabecalhosParaImprimir() throws Exception {
+        Factura f = facturaExemplo(7L);
+        byte[] pdf = {37, 80, 68, 70, 45};
+        when(service.buscarPorId(7L)).thenReturn(f);
+        when(pdfService.gerar(f)).thenReturn(pdf);
+
+        mockMvc.perform(get("/api/facturas/7/pdf"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_PDF))
+                .andExpect(header().string("Content-Disposition", containsString("factura-7.pdf")))
+                .andExpect(content().bytes(pdf));
+    }
+
+    @Test
+    void getPdfDeFacturaInexistenteDevolve404() throws Exception {
+        when(service.buscarPorId(99L))
+                .thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Factura não encontrada"));
+
+        mockMvc.perform(get("/api/facturas/99/pdf")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getPdfDeRascunhoDevolve409() throws Exception {
+        Factura f = facturaExemplo(7L);
+        when(service.buscarPorId(7L)).thenReturn(f);
+        when(pdfService.gerar(f)).thenThrow(new ResponseStatusException(HttpStatus.CONFLICT, "rascunho"));
+
+        mockMvc.perform(get("/api/facturas/7/pdf")).andExpect(status().isConflict());
+    }
+
+    // ---------- envio e histórico ----------
+
+    @Test
+    void postEnvioDevolve200ComOEnvioRegistado() throws Exception {
+        EnvioFactura envio = EnvioFactura.sucesso(facturaExemplo(7L), "ana@mail.com");
+        envio.setIdEnvio(3L);
+        when(envioService.enviar(7L)).thenReturn(envio);
+
+        mockMvc.perform(post("/api/facturas/7/envio"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.idEnvio").value(3))
+                .andExpect(jsonPath("$.idFactura").value(7))
+                .andExpect(jsonPath("$.destinatario").value("ana@mail.com"))
+                .andExpect(jsonPath("$.sucesso").value(true));
+    }
+
+    @Test
+    void postEnvioDeFacturaInexistenteDevolve404() throws Exception {
+        when(envioService.enviar(99L)).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "x"));
+
+        mockMvc.perform(post("/api/facturas/99/envio")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void postEnvioDeRascunhoDevolve409() throws Exception {
+        when(envioService.enviar(7L)).thenThrow(new ResponseStatusException(HttpStatus.CONFLICT, "x"));
+
+        mockMvc.perform(post("/api/facturas/7/envio")).andExpect(status().isConflict());
+    }
+
+    @Test
+    void postEnvioComFalhaDeSmtpDevolve502() throws Exception {
+        when(envioService.enviar(7L)).thenThrow(new ResponseStatusException(HttpStatus.BAD_GATEWAY, "x"));
+
+        mockMvc.perform(post("/api/facturas/7/envio")).andExpect(status().isBadGateway());
+    }
+
+    @Test
+    void postEnvioSemSmtpConfiguradoDevolve503() throws Exception {
+        when(envioService.enviar(7L)).thenThrow(new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "x"));
+
+        mockMvc.perform(post("/api/facturas/7/envio")).andExpect(status().isServiceUnavailable());
+    }
+
+    @Test
+    void getEnviosListaOHistorico() throws Exception {
+        EnvioFactura falha = EnvioFactura.falha(facturaExemplo(7L), "ana@mail.com", "SMTP em baixo");
+        when(envioService.listarEnvios(7L)).thenReturn(List.of(falha));
+
+        mockMvc.perform(get("/api/facturas/7/envios"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].sucesso").value(false))
+                .andExpect(jsonPath("$[0].erro").value("SMTP em baixo"));
+    }
+
+    @Test
+    void getEnviosDeFacturaInexistenteDevolve404() throws Exception {
+        when(envioService.listarEnvios(99L)).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "x"));
+
+        mockMvc.perform(get("/api/facturas/99/envios")).andExpect(status().isNotFound());
     }
 }

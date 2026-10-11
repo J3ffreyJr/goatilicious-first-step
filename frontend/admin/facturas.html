@@ -26,14 +26,26 @@
         <span id="contagem" class="contagem"></span>
         <button type="button" id="btn-atualizar">Atualizar</button>
       </div>
+      <div id="mensagem" class="mensagem" role="alert" hidden></div>
       <div class="tabela-wrap">
         <table id="tabela-facturas">
           <thead>
-            <tr><th>Factura</th><th>Pedido</th><th>Cliente</th><th>Total</th><th>Pagamento</th><th>Estado</th><th>Data</th></tr>
+            <tr><th>Factura</th><th>Pedido</th><th>Cliente</th><th>Total</th><th>Pagamento</th><th>Estado</th><th>Data</th><th>Ações</th></tr>
           </thead>
           <tbody id="corpo-tabela"></tbody>
         </table>
       </div>
+    </section>
+
+    <section class="cartao" id="painel-historico" hidden>
+      <h2 id="historico-titulo">Histórico de envios</h2>
+      <div class="tabela-wrap">
+        <table>
+          <thead><tr><th>Data</th><th>Destinatário</th><th>Resultado</th></tr></thead>
+          <tbody id="corpo-historico"></tbody>
+        </table>
+      </div>
+      <button type="button" id="btn-fechar-historico" class="secundario">Fechar</button>
     </section>
   </main>
 
