@@ -1,10 +1,10 @@
-# Goatilicious — Sorvetes Artesanais de Leite de Cabra 🍦🐐
+# Goatilicious — Sorvetes Artesanais de Leite de Cabra 
 
 Projeto prático desenvolvido para a cadeira de **Engenharia de Software** (ISUTC — 2º Semestre de 2026).
 
 ---
 
-## 📌 Visão Geral
+##  Visão Geral
 
 A **Goatilicious** é uma marca de sorvetes de luxo feitos artesanalmente com leite de cabra em Maputo, Moçambique. O sistema digitaliza as operações da marca através de duas interfaces integradas a uma API RESTful:
 1. **Portal do Cliente:** Landing page interativa com visualização 3D de produtos, parallax, transição animada de sabores, navegação de cardápio e fluxo de registo.
@@ -12,7 +12,7 @@ A **Goatilicious** é uma marca de sorvetes de luxo feitos artesanalmente com le
 
 ---
 
-## 🛠️ Stack Tecnológica
+##  Stack Tecnológica
 
 ### Backend
 - **Java 17**
@@ -31,7 +31,7 @@ A **Goatilicious** é uma marca de sorvetes de luxo feitos artesanalmente com le
 
 ---
 
-## 🚀 Como Executar o Projeto
+##  Como Executar o Projeto
 
 ### Pré-requisitos
 - **Java 17** ou superior instalado e configurado no `PATH`
@@ -80,7 +80,7 @@ npm run build
 
 ---
 
-## 🧭 Rotas e Páginas Principais
+## Rotas e Páginas Principais
 
 | Página | URL no Dev Server | Descrição |
 | :--- | :--- | :--- |
