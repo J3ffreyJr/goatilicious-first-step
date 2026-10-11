@@ -13,7 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Catálogo inicial: a base H2 é em memória, por isso o catálogo é recriado a cada arranque.
+ * Catálogo inicial: só é carregado quando a tabela de produtos está vazia (primeiro arranque),
+ * porque a base H2 é em ficheiro e os dados persistem entre arranques.
  * ATENÇÃO: os preços por tamanho são valores provisórios (só o 500ml = 350 MT vem da landing page).
  */
 @Component
