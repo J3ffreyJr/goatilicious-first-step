@@ -1,3 +1,6 @@
+import '../shared/config.js';
+import '../shared/auth.js';
+
 (function () {
   const CONDICOES = { A_VISTA: 'À vista', CARTAO: 'Cartão', PAGO_NA_ENTREGA: 'Pagamento na entrega' };
   const ESTADOS = { RASCUNHO: 'Rascunho', FINAL: 'Final' };
@@ -50,7 +53,7 @@
     // Dali o funcionário imprime ou grava.
     mensagem.hidden = true;
     try {
-      const r = await GoatAuth.abrirPdf('staff', API_BASE + '/facturas/' + f.idFactura + '/pdf');
+      const r = await GoatAuth.abrirPdf('staff', window.API_BASE + '/facturas/' + f.idFactura + '/pdf');
       if (r.status === 409) mostrarMensagem('A factura ainda é um rascunho. Reveja o pedido antes de a imprimir.', 'erro');
       else if (!r.ok) mostrarMensagem('Não foi possível abrir o PDF (código ' + r.status + ').', 'erro');
     } catch (e) {
@@ -65,7 +68,7 @@
 
     botao.disabled = true;
     try {
-      const r = await GoatAuth.authFetch('staff', API_BASE + '/facturas/' + f.idFactura + '/envio', { method: 'POST' });
+      const r = await GoatAuth.authFetch('staff', window.API_BASE + '/facturas/' + f.idFactura + '/envio', { method: 'POST' });
       if (r.ok) {
         const e = await r.json();
         mostrarMensagem('Factura ' + f.idFactura + ' enviada para ' + e.destinatario + '.', 'sucesso');
@@ -90,7 +93,7 @@
   async function verHistorico(f) {
     mensagem.hidden = true;
     try {
-      const r = await GoatAuth.authFetch('staff', API_BASE + '/facturas/' + f.idFactura + '/envios');
+      const r = await GoatAuth.authFetch('staff', window.API_BASE + '/facturas/' + f.idFactura + '/envios');
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const envios = await r.json();
 
@@ -146,7 +149,7 @@
     contagem.textContent = '';
     mostrarEstado('A carregar facturas...');
     try {
-      const r = await GoatAuth.authFetch('staff', API_BASE + '/facturas');
+      const r = await GoatAuth.authFetch('staff', window.API_BASE + '/facturas');
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const facturas = await r.json();
       facturas.sort(function (a, b) { return b.idFactura - a.idFactura; });

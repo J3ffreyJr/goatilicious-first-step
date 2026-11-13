@@ -17,7 +17,7 @@ A **Goatilicious** é uma marca de sorvetes de luxo feitos artesanalmente com le
 ### Backend
 - **Java 17**
 - **Spring Boot 3.2.5** (Spring Web, Spring Data JPA, Bean Validation)
-- **H2 Database** (em memória para desenvolvimento e testes rápidos)
+- **H2 Database** (base persistente em ficheiro para desenvolvimento; base em memória nos testes)
 - **JUnit 5 & Mockito** (testes unitários e de integração de controllers e repositories)
 - **Maven** (gestão de dependências e build)
 
@@ -42,40 +42,64 @@ A **Goatilicious** é uma marca de sorvetes de luxo feitos artesanalmente com le
 
 ### 1. Iniciar o Backend
 
-Abra um terminal e execute:
+Abra um terminal na raiz do projeto e execute:
 
 ```bash
-cd backend
-mvn clean spring-boot:run
+npm run backend:run
 ```
 
 - A API estará disponível em: `http://localhost:8080/api`
-- Console do Banco H2: `http://localhost:8080/h2-console`
-  - **JDBC URL:** `jdbc:h2:mem:goatilicious`
+- O banco de desenvolvimento usa o ficheiro `backend/data/goatilicious.mv.db`.
+- O Console H2 está desligado por defeito. Para o ativar apenas localmente:
+
+```powershell
+$env:SPRING_H2_CONSOLE_ENABLED="true"
+npm run backend:run
+```
+
+Depois aceda a `http://localhost:8080/h2-console`:
+  - **JDBC URL:** `jdbc:h2:file:./data/goatilicious`
   - **User:** `sa`
   - **Password:** *(deixar em branco)*
 
+#### Configuração de segurança
+
+O frontend autentica-se por sessão com cookie `HttpOnly` e proteção CSRF. Em produção, defina:
+
+```powershell
+$env:GOATILICIOUS_CORS_ALLOWED_ORIGINS="https://app.exemplo.com"
+$env:SERVER_SESSION_COOKIE_SECURE="true"
+$env:GOATILICIOUS_STAFF_EMAIL="staff@exemplo.com"
+$env:GOATILICIOUS_STAFF_PASSWORD="uma-senha-forte"
+```
+
+`GOATILICIOUS_CORS_ALLOWED_ORIGINS` aceita uma lista de origens separadas por vírgula. `SERVER_SESSION_COOKIE_SECURE=true` deve ser usado quando a aplicação estiver atrás de HTTPS. O HTTP Basic permanece apenas como compatibilidade temporária com clientes legados.
+
 Para rodar os testes automatizados do backend:
 ```bash
-mvn test
+npm run backend:test
 ```
 
 ---
 
 ### 2. Iniciar o Frontend
 
-Em outro terminal, execute:
+Em outro terminal na raiz do projeto, execute:
 
 ```bash
-cd frontend
-npm install
-npm run dev
+npm install --prefix frontend
+npm run frontend:dev
 ```
 
 - A aplicação estará disponível em: `http://localhost:5173/`
 - Para gerar o build de produção:
 ```bash
-npm run build
+npm run frontend:build
+```
+
+- Para validar localmente o build de produção:
+```bash
+npm run frontend:preview
 ```
 
 ---

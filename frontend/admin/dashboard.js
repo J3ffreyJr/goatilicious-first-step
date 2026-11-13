@@ -1,3 +1,6 @@
+import '../shared/config.js';
+import '../shared/auth.js';
+
 (function () {
   const TAMANHOS = { ML_125: '125 ml', ML_500: '500 ml', L_1: '1 L', L_5: '5 L' };
   const mensagem = document.getElementById('mensagem');
@@ -62,7 +65,7 @@
   async function carregar() {
     mensagem.hidden = true;
     try {
-      const r = await GoatAuth.authFetch('staff', API_BASE + '/dashboard');
+      const r = await GoatAuth.authFetch('staff', window.API_BASE + '/dashboard');
       if (r.status === 403) { mostrarMensagem('Esta conta não tem acesso ao dashboard.', 'erro'); return; }
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const d = await r.json();

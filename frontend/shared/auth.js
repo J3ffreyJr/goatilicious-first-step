@@ -1,8 +1,8 @@
 /*
- * Sessão e acesso — Goatilicious (HTTP Basic).
- * Duas zonas independentes: "cliente" (portal) e "staff" (painel). Cada uma guarda a sua sessão em
- * sessionStorage, por isso uma conta de cliente nunca abre o painel e o contrário também não.
- * Funciona como script clássico (admin) e como import de efeito (páginas do cliente com Vite).
+ * Sessão e acesso — Goatilicious (cookie de sessão HttpOnly).
+ * Duas zonas independentes: "cliente" (portal) e "staff" (painel). Cada uma guarda apenas o
+ * perfil visual da sessão em sessionStorage; a autenticação real fica no cookie do servidor.
+ * É carregado como import de efeito pelas páginas do portal e do painel.
  * Todo o texto do utilizador entra por textContent.
  */
 (function () {
@@ -22,7 +22,7 @@
     try {
       var bruto = window.sessionStorage.getItem(ZONAS[zona].chave);
       var s = bruto ? JSON.parse(bruto) : null;
-      return s && s.cabecalho ? s : null;
+      return s && s.papel ? s : null;
     } catch (e) { return null; }
   }
   function gravar(zona, s) {
@@ -32,9 +32,32 @@
     try { window.sessionStorage.removeItem(ZONAS[zona].chave); } catch (e) { /* opcional */ }
   }
 
-  function cabecalhoBasic(email, senha) {
-    // UTF-8 seguro: nomes e senhas com acentos.
-    return 'Basic ' + window.btoa(unescape(encodeURIComponent(email + ':' + senha)));
+  function lerCookie(nome) {
+    const prefixo = nome + '=';
+    const encontrado = document.cookie.split(';').map(function (item) { return item.trim(); })
+      .find(function (item) { return item.indexOf(prefixo) === 0; });
+    return encontrado ? decodeURIComponent(encontrado.slice(prefixo.length)) : '';
+  }
+
+  async function garantirCsrf() {
+    const resposta = await window.fetch(api() + '/auth/csrf', { credentials: 'include' });
+    if (!resposta.ok) throw new Error('Não foi possível obter o token CSRF.');
+    const corpo = await resposta.json();
+    return corpo.token || lerCookie('XSRF-TOKEN');
+  }
+
+  function eMetodoMutavel(metodo) {
+    return ['POST', 'PUT', 'PATCH', 'DELETE'].indexOf(String(metodo || 'GET').toUpperCase()) >= 0;
+  }
+
+  async function opcoesComCsrf(opcoes) {
+    const op = Object.assign({}, opcoes || {});
+    op.credentials = 'include';
+    op.headers = Object.assign({}, op.headers || {});
+    if (eMetodoMutavel(op.method)) {
+      op.headers['X-XSRF-TOKEN'] = await garantirCsrf();
+    }
+    return op;
   }
 
   function irParaLogin(zona, expirou) {
@@ -55,43 +78,56 @@
   }
 
   /**
-   * Valida as credenciais em GET /api/me e confirma o papel da zona.
+   * Valida as credenciais em POST /api/auth/login e confirma o papel da zona.
    * Devolve { ok: true, sessao } ou { ok: false, motivo: 'credenciais' | 'papel' | 'rede' | 'erro' }.
    */
   async function entrar(zona, email, senha) {
-    var cabecalho = cabecalhoBasic(String(email).trim(), senha);
     var r;
     try {
-      r = await window.fetch(api() + '/me', { headers: { Authorization: cabecalho } });
+      const csrf = await garantirCsrf();
+      r = await window.fetch(api() + '/auth/login', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', 'X-XSRF-TOKEN': csrf },
+        body: JSON.stringify({ email: String(email).trim(), senha: senha })
+      });
     } catch (e) {
       return { ok: false, motivo: 'rede' };
     }
     if (r.status === 401) return { ok: false, motivo: 'credenciais' };
     if (!r.ok) return { ok: false, motivo: 'erro' };
 
-    var me = await r.json();
+    const me = await r.json();
     if (me.papel !== ZONAS[zona].papel) return { ok: false, motivo: 'papel' };
 
-    var s = { cabecalho: cabecalho, nome: me.nome, email: me.email, papel: me.papel, clienteId: me.clienteId };
+    const s = { nome: me.nome, email: me.email, papel: me.papel, clienteId: me.clienteId };
     gravar(zona, s);
     return { ok: true, sessao: s };
   }
 
-  function sair(zona, redirecionar) {
-    limpar(zona);
-    if (redirecionar !== false) irParaLogin(zona, false);
+  async function sair(zona, redirecionar) {
+    try {
+      const op = await opcoesComCsrf({ method: 'POST' });
+      const resposta = await window.fetch(api() + '/auth/logout', op);
+      if (!resposta.ok) {
+        throw new Error('Logout rejeitado pelo servidor: ' + resposta.status);
+      }
+    } catch (e) {
+      console.warn('Não foi possível invalidar a sessão no servidor.', e);
+    } finally {
+      limpar(zona);
+      if (redirecionar !== false) irParaLogin(zona, false);
+    }
   }
 
-  /** fetch com o cabeçalho Authorization da zona. Em 401 a sessão acabou: volta ao login. */
+  /** fetch com o cookie da sessão. Em 401 a sessão acabou: volta ao login. */
   async function authFetch(zona, url, opcoes) {
-    var s = ler(zona);
-    if (!s) {
+    if (!ler(zona)) {
       irParaLogin(zona, true);
       return new Promise(function () { /* a página vai mudar */ });
     }
-    var op = Object.assign({}, opcoes || {});
-    op.headers = Object.assign({}, op.headers || {}, { Authorization: s.cabecalho });
-    var r = await window.fetch(url, op);
+    const op = await opcoesComCsrf(opcoes);
+    const r = await window.fetch(url, op);
     if (r.status === 401) {
       limpar(zona);
       irParaLogin(zona, true);

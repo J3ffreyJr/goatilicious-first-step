@@ -1,4 +1,12 @@
 {
+  "private": true,
+  "scripts": {
+    "frontend:dev": "npm --prefix frontend run dev",
+    "frontend:build": "npm --prefix frontend run build",
+    "frontend:preview": "npm --prefix frontend run preview",
+    "backend:run": "mvn -f backend/pom.xml spring-boot:run",
+    "backend:test": "mvn -f backend/pom.xml test"
+  },
   "dependencies": {
     "gsap": "^3.15.0",
     "three": "^0.186.1"

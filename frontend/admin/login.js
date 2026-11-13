@@ -1,3 +1,6 @@
+import '../shared/config.js';
+import '../shared/auth.js';
+
 (function () {
   const form = document.getElementById('form-login');
   const botao = document.getElementById('btn-entrar');

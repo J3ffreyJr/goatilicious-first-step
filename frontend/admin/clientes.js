@@ -1,3 +1,6 @@
+import '../shared/config.js';
+import '../shared/auth.js';
+
 (function () {
   const corpo = document.getElementById('corpo-tabela');
   const contagem = document.getElementById('contagem');
@@ -44,7 +47,7 @@
     mostrarEstado('A carregar clientes...');
 
     try {
-      const resposta = await GoatAuth.authFetch('staff', API_BASE + '/clientes');
+      const resposta = await GoatAuth.authFetch('staff', window.API_BASE + '/clientes');
       if (!resposta.ok) {
         throw new Error('HTTP ' + resposta.status);
       }
@@ -83,7 +86,7 @@
     const c = form.elements;
     botaoGuardar.disabled = true;
     try {
-      const resposta = await GoatAuth.authFetch('staff', API_BASE + '/clientes', {
+      const resposta = await GoatAuth.authFetch('staff', window.API_BASE + '/clientes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
