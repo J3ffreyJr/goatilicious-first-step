@@ -1,5 +1,6 @@
 package com.goatilicious.integration;
 
+import org.springframework.security.test.context.support.WithMockUser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /** Percorre o Sprint 1 de ponta a ponta com a aplicação real (H2 + catálogo semeado). */
 @SpringBootTest
 @AutoConfigureMockMvc
+@WithMockUser(roles = "STAFF")
 class Sprint1IntegracaoTest {
 
     @Autowired
@@ -47,12 +49,8 @@ class Sprint1IntegracaoTest {
     }
 
     @Test
-    void clienteDoSiteRegistaSeIdentificaSePorEmailEFazPedidoOnline() throws Exception {
+    void clienteRegistadoFazPedidoOnline() throws Exception {
         long id = criarCliente("Ana Integracao", "ana.int@mail.com");
-
-        mockMvc.perform(get("/api/clientes/por-email").param("email", "ana.int@mail.com"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.idCliente").value(id));
 
         long produtoId = lerJson("/api/produtos").get(0).get("idProduto").asLong();
         String pedido = "{\"clienteId\":" + id + ",\"origem\":\"ONLINE\","

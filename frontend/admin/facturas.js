@@ -45,9 +45,17 @@
   }
 
   // ---------- ações da fatura final ----------
-  function imprimir(f) {
-    // O PDF abre numa nova aba; dali o funcionário imprime ou grava.
-    window.open(API_BASE + '/facturas/' + f.idFactura + '/pdf', '_blank', 'noopener');
+  async function imprimir(f) {
+    // O PDF exige login: abre-se uma aba já no clique e o PDF entra nela quando chega.
+    // Dali o funcionário imprime ou grava.
+    mensagem.hidden = true;
+    try {
+      const r = await GoatAuth.abrirPdf('staff', API_BASE + '/facturas/' + f.idFactura + '/pdf');
+      if (r.status === 409) mostrarMensagem('A factura ainda é um rascunho. Reveja o pedido antes de a imprimir.', 'erro');
+      else if (!r.ok) mostrarMensagem('Não foi possível abrir o PDF (código ' + r.status + ').', 'erro');
+    } catch (e) {
+      mostrarMensagem('Não foi possível conectar ao servidor.', 'erro');
+    }
   }
 
   async function enviar(f, botao) {
@@ -57,7 +65,7 @@
 
     botao.disabled = true;
     try {
-      const r = await fetch(API_BASE + '/facturas/' + f.idFactura + '/envio', { method: 'POST' });
+      const r = await GoatAuth.authFetch('staff', API_BASE + '/facturas/' + f.idFactura + '/envio', { method: 'POST' });
       if (r.ok) {
         const e = await r.json();
         mostrarMensagem('Factura ' + f.idFactura + ' enviada para ' + e.destinatario + '.', 'sucesso');
@@ -82,7 +90,7 @@
   async function verHistorico(f) {
     mensagem.hidden = true;
     try {
-      const r = await fetch(API_BASE + '/facturas/' + f.idFactura + '/envios');
+      const r = await GoatAuth.authFetch('staff', API_BASE + '/facturas/' + f.idFactura + '/envios');
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const envios = await r.json();
 
@@ -138,7 +146,7 @@
     contagem.textContent = '';
     mostrarEstado('A carregar facturas...');
     try {
-      const r = await fetch(API_BASE + '/facturas');
+      const r = await GoatAuth.authFetch('staff', API_BASE + '/facturas');
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const facturas = await r.json();
       facturas.sort(function (a, b) { return b.idFactura - a.idFactura; });

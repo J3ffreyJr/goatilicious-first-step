@@ -1,5 +1,6 @@
 package com.goatilicious.integration;
 
+import org.springframework.security.test.context.support.WithMockUser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goatilicious.mail.EmailFalhouException;
@@ -29,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /** Sprint 3 de ponta a ponta: fatura final -> PDF -> envio por e-mail -> histórico (SMTP simulado). */
 @SpringBootTest
 @AutoConfigureMockMvc
+@WithMockUser(roles = "STAFF")
 class Sprint3IntegracaoTest {
 
     @Autowired

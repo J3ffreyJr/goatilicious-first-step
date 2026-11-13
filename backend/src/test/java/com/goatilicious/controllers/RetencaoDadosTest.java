@@ -1,6 +1,9 @@
 package com.goatilicious.controllers;
 
-import com.goatilicious.repositories.ClienteRepository;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.context.annotation.Import;
+import com.goatilicious.config.SecurityConfig;
+import com.goatilicious.services.ClienteService;
 import com.goatilicious.services.EnvioFacturaService;
 import com.goatilicious.services.FacturaPdfService;
 import com.goatilicious.services.FacturaService;
@@ -16,6 +19,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /** RNF01: a API não permite apagar pedidos, faturas nem clientes (dados retidos 5 anos). */
 @WebMvcTest({PedidoController.class, FacturaController.class, ClienteController.class})
+@Import(SecurityConfig.class)
+@WithMockUser(roles = "STAFF")
 class RetencaoDadosTest {
 
     @Autowired
@@ -30,7 +35,7 @@ class RetencaoDadosTest {
     @MockBean
     private EnvioFacturaService envioService;
     @MockBean
-    private ClienteRepository clienteRepository;
+    private ClienteService clienteService;
 
     @Test
     void naoSePodeApagarUmPedido() throws Exception {

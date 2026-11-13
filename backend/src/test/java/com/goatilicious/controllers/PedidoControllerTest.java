@@ -1,5 +1,8 @@
 package com.goatilicious.controllers;
 
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.context.annotation.Import;
+import com.goatilicious.config.SecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goatilicious.dtos.PedidoRequest;
 import com.goatilicious.dtos.PedidoRequest.ItemRequest;
@@ -35,6 +38,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(PedidoController.class)
+@Import(SecurityConfig.class)
+@WithMockUser(roles = "STAFF")
 class PedidoControllerTest {
 
     @Autowired

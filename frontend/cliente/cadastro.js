@@ -1,4 +1,5 @@
 import '../src/styles/cadastro.css';
+import '../shared/auth.js';
 import { initBubbles } from '../src/modules/bubbles.js';
 import { initMenu } from '../src/modules/menu.js';
 
@@ -30,7 +31,8 @@ import { initMenu } from '../src/modules/menu.js';
       nome: campos.nome.value.trim(),
       email: campos.email.value.trim(),
       telefone: campos.telefone.value.trim(),
-      endereco: campos.endereco.value.trim()
+      endereco: campos.endereco.value.trim(),
+      senha: campos.senha.value        // só viaja no POST; o servidor guarda apenas o hash
     };
   }
 
@@ -40,6 +42,11 @@ import { initMenu } from '../src/modules/menu.js';
 
     if (!form.checkValidity()) {
       form.reportValidity();
+      return;
+    }
+
+    if (form.elements.senha.value !== form.elements.confirmar.value) {
+      mostrarMensagem('As palavras-passe não coincidem.', 'erro');
       return;
     }
 
@@ -56,13 +63,20 @@ import { initMenu } from '../src/modules/menu.js';
 
       if (resposta.status === 201) {
         const cliente = await resposta.json();
-        mostrarMensagem('Registo concluído com sucesso! Bem-vindo(a) à Goatilicious, ' + cliente.nome + '.', 'sucesso');
-        try { localStorage.setItem('goatilicious.cliente', JSON.stringify({ idCliente: cliente.idCliente, nome: cliente.nome })); } catch (e) { /* opcional */ }
+        const email = form.elements.email.value;
+        const senha = form.elements.senha.value;
+        // Conta criada: entra logo e segue para o pedido.
+        const login = await window.GoatAuth.entrar('cliente', email, senha);
+        if (login.ok) {
+          window.location.replace('/cliente/pedido.html');
+          return;
+        }
+        mostrarMensagem('Registo concluído, ' + cliente.nome + '! Já pode entrar na sua conta.', 'sucesso');
         form.reset();
       } else if (resposta.status === 409) {
         mostrarMensagem('Este endereço de email já se encontra registado.', 'erro');
       } else if (resposta.status === 400) {
-        mostrarMensagem('Dados inválidos. Verifique os campos de nome e email.', 'erro');
+        mostrarMensagem('Dados inválidos. Verifique o nome, o email e a palavra-passe (mínimo 8 caracteres).', 'erro');
       } else {
         mostrarMensagem('Ocorreu um erro inesperado (código ' + resposta.status + '). Tente novamente.', 'erro');
       }

@@ -1,29 +1,39 @@
 package com.goatilicious.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.goatilicious.config.SecurityConfig;
+import com.goatilicious.dtos.ClienteRequest;
+import com.goatilicious.enums.Papel;
 import com.goatilicious.models.Cliente;
-import com.goatilicious.repositories.ClienteRepository;
+import com.goatilicious.security.ContaAutenticada;
+import com.goatilicious.services.ClienteService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ClienteController.class)
+@Import(SecurityConfig.class)
 class ClienteControllerTest {
 
     @Autowired
@@ -33,7 +43,7 @@ class ClienteControllerTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private ClienteRepository repository;
+    private ClienteService service;
 
     private Cliente cliente(Long id, String nome, String email) {
         Cliente c = new Cliente();
@@ -46,97 +56,118 @@ class ClienteControllerTest {
         return c;
     }
 
-    @Test
-    void postDeveCriarClienteERetornar201() throws Exception {
-        Cliente entrada = cliente(null, "Ana", "ana@mail.com");
-        when(repository.existsByEmail("ana@mail.com")).thenReturn(false);
-        when(repository.save(any(Cliente.class))).thenReturn(cliente(1L, "Ana", "ana@mail.com"));
+    private String corpo(String nome, String email, String senha) throws Exception {
+        return objectMapper.writeValueAsString(new ClienteRequest(nome, email, "+258 84 000 0000", "Maputo", senha));
+    }
 
-        mockMvc.perform(post("/api/clientes")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(entrada)))
+    private ContaAutenticada staff() {
+        return new ContaAutenticada(1L, "Maria", "maria@goat.co.mz", "x", Papel.STAFF, null);
+    }
+
+    private ContaAutenticada clienteLogado() {
+        return new ContaAutenticada(2L, "Ana", "ana@mail.com", "x", Papel.CLIENTE, 7L);
+    }
+
+    // --- cadastro público ---
+
+    @Test
+    void cadastroAnonimoCriaClienteERetorna201SemSenhaNaResposta() throws Exception {
+        when(service.criar(any(ClienteRequest.class), eq(false))).thenReturn(cliente(1L, "Ana", "ana@mail.com"));
+
+        mockMvc.perform(post("/api/clientes").contentType(MediaType.APPLICATION_JSON)
+                        .content(corpo("Ana", "ana@mail.com", "senha-longa")))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.idCliente").value(1))
                 .andExpect(jsonPath("$.nome").value("Ana"))
-                .andExpect(jsonPath("$.email").value("ana@mail.com"));
+                .andExpect(jsonPath("$.senha").doesNotExist())
+                .andExpect(jsonPath("$.senhaHash").doesNotExist());
+    }
+
+    @Test
+    void cadastroFeitoPorStaffAvisaOServicoQueEStaff() throws Exception {
+        when(service.criar(any(ClienteRequest.class), eq(true))).thenReturn(cliente(1L, "Ana", "ana@mail.com"));
+
+        mockMvc.perform(post("/api/clientes").with(user(staff())).contentType(MediaType.APPLICATION_JSON)
+                        .content(corpo("Ana", "ana@mail.com", null)))
+                .andExpect(status().isCreated());
+
+        verify(service).criar(any(ClienteRequest.class), eq(true));
+    }
+
+    @Test
+    void cadastroFeitoPorClienteLogadoNaoContaComoStaff() throws Exception {
+        when(service.criar(any(ClienteRequest.class), eq(false))).thenReturn(cliente(1L, "Ana", "ana@mail.com"));
+
+        mockMvc.perform(post("/api/clientes").with(user(clienteLogado())).contentType(MediaType.APPLICATION_JSON)
+                        .content(corpo("Ana", "ana@mail.com", "senha-longa")))
+                .andExpect(status().isCreated());
+
+        verify(service).criar(any(ClienteRequest.class), eq(false));
     }
 
     @Test
     void postComEmailInvalidoDeveRetornar400() throws Exception {
-        Cliente entrada = cliente(null, "Ana", "email-invalido");
-
-        mockMvc.perform(post("/api/clientes")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(entrada)))
+        mockMvc.perform(post("/api/clientes").contentType(MediaType.APPLICATION_JSON)
+                        .content(corpo("Ana", "email-invalido", "senha-longa")))
                 .andExpect(status().isBadRequest());
 
-        verify(repository, never()).save(any());
+        verify(service, never()).criar(any(), eq(false));
     }
 
     @Test
     void postSemNomeDeveRetornar400() throws Exception {
-        Cliente entrada = cliente(null, "", "ana@mail.com");
-
-        mockMvc.perform(post("/api/clientes")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(entrada)))
+        mockMvc.perform(post("/api/clientes").contentType(MediaType.APPLICATION_JSON)
+                        .content(corpo("", "ana@mail.com", "senha-longa")))
                 .andExpect(status().isBadRequest());
 
-        verify(repository, never()).save(any());
+        verify(service, never()).criar(any(), eq(false));
     }
 
     @Test
-    void postComEmailJaCadastradoDeveRetornar409() throws Exception {
-        Cliente entrada = cliente(null, "Ana", "ana@mail.com");
-        when(repository.existsByEmail("ana@mail.com")).thenReturn(true);
+    void erroDoServicoPropagaOStatus() throws Exception {
+        when(service.criar(any(ClienteRequest.class), eq(false)))
+                .thenThrow(new ResponseStatusException(HttpStatus.CONFLICT, "Email já cadastrado"));
 
-        mockMvc.perform(post("/api/clientes")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(entrada)))
+        mockMvc.perform(post("/api/clientes").contentType(MediaType.APPLICATION_JSON)
+                        .content(corpo("Ana", "ana@mail.com", "senha-longa")))
                 .andExpect(status().isConflict());
-
-        verify(repository, never()).save(any());
     }
 
+    // --- listagem: só staff ---
+
     @Test
-    void getDeveListarClientes() throws Exception {
-        when(repository.findAll()).thenReturn(List.of(
+    void staffListaClientes() throws Exception {
+        when(service.listar()).thenReturn(List.of(
                 cliente(1L, "Ana", "ana@mail.com"),
                 cliente(2L, "Bruno", "bruno@mail.com")));
 
-        mockMvc.perform(get("/api/clientes"))
+        mockMvc.perform(get("/api/clientes").with(user(staff())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].nome").value("Ana"))
                 .andExpect(jsonPath("$[1].nome").value("Bruno"));
     }
 
-    // --- Identificação do cliente no site (sem login): devolve só o essencial ---
+    @Test
+    void anonimoNaoListaClientes401SemDesafioDoBrowser() throws Exception {
+        mockMvc.perform(get("/api/clientes"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(header().doesNotExist("WWW-Authenticate"));
+    }
 
     @Test
-    void getPorEmailDeveRetornarApenasIdENome() throws Exception {
-        when(repository.findByEmail("ana@mail.com")).thenReturn(Optional.of(cliente(7L, "Ana", "ana@mail.com")));
+    void clienteNaoListaClientes403() throws Exception {
+        mockMvc.perform(get("/api/clientes").with(user(clienteLogado())))
+                .andExpect(status().isForbidden());
 
+        verify(service, never()).listar();
+    }
+
+    @Test
+    void identificacaoPorEmailFoiRemovida() throws Exception {
         mockMvc.perform(get("/api/clientes/por-email").param("email", "ana@mail.com"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.idCliente").value(7))
-                .andExpect(jsonPath("$.nome").value("Ana"))
-                .andExpect(jsonPath("$.email").doesNotExist())
-                .andExpect(jsonPath("$.telefone").doesNotExist())
-                .andExpect(jsonPath("$.endereco").doesNotExist());
-    }
-
-    @Test
-    void getPorEmailInexistenteDeveRetornar404() throws Exception {
-        when(repository.findByEmail("x@mail.com")).thenReturn(Optional.empty());
-
-        mockMvc.perform(get("/api/clientes/por-email").param("email", "x@mail.com"))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    void getPorEmailSemParametroDeveRetornar400() throws Exception {
-        mockMvc.perform(get("/api/clientes/por-email"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(get("/api/clientes/por-email").param("email", "ana@mail.com").with(user(staff())))
+                .andExpect(status().is4xxClientError());
     }
 }
