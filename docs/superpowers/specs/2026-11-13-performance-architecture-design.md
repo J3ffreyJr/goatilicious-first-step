@@ -8,9 +8,11 @@ Esta fase cobre backend e frontend, preserva o comportamento funcional actual
 e reduz três falhas observadas: consultas N+1, listagens ilimitadas e
 acoplamento entre entidades JPA e contratos HTTP.
 
-O alvo não é introduzir microserviços, cache distribuído ou trocar H2 nesta
-fase. A solução deve ser incremental e compatível com a API existente sempre
-que o frontend já dependa do formato actual.
+H2 continua a ser a base de dados adoptada para desenvolvimento, testes e
+execução desta aplicação. Não haverá migração para PostgreSQL nesta fase nem
+como requisito futuro deste desenho. A solução deve ser incremental e
+compatível com a API existente sempre que o frontend já dependa do formato
+actual.
 
 ## Evidência actual
 
@@ -104,7 +106,7 @@ não piora.
 
 ## Não objectivos
 
-- Migração imediata para PostgreSQL.
+- Migração para PostgreSQL; H2 permanece a base de dados do projecto.
 - Cache distribuído ou processamento assíncrono do dashboard.
 - Separação em microserviços.
 - Alterações cosméticas não relacionadas com desempenho.
