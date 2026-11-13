@@ -76,7 +76,7 @@
 
   async function carregarFormulario() {
     try {
-      const [rc, rp] = await Promise.all([fetch(API_BASE + '/clientes'), fetch(API_BASE + '/produtos')]);
+      const [rc, rp] = await Promise.all([GoatAuth.authFetch('staff', API_BASE + '/clientes'), GoatAuth.authFetch('staff', API_BASE + '/produtos')]);
       if (!rc.ok || !rp.ok) throw new Error('HTTP');
       const clientes = await rc.json();
       produtos = await rp.json();
@@ -116,7 +116,7 @@
 
     btnGuardar.disabled = true;
     try {
-      const r = await fetch(API_BASE + '/pedidos', {
+      const r = await GoatAuth.authFetch('staff', API_BASE + '/pedidos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ clienteId: Number(selCliente.value), origem: 'TELEFONE', itens: itens })
@@ -171,7 +171,7 @@
     contagem.textContent = '';
     mostrarEstado('A carregar pedidos...');
     try {
-      const r = await fetch(API_BASE + '/pedidos');
+      const r = await GoatAuth.authFetch('staff', API_BASE + '/pedidos');
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const pedidos = await r.json();
       pedidos.sort(function (a, b) { return b.idPedido - a.idPedido; });
@@ -327,7 +327,7 @@
 
     revFinalizar.disabled = true;
     try {
-      const r = await fetch(API_BASE + '/pedidos/' + revPedidoId + '/revisao', {
+      const r = await GoatAuth.authFetch('staff', API_BASE + '/pedidos/' + revPedidoId + '/revisao', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

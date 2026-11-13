@@ -10,7 +10,7 @@
   <link rel="preload" href="/node_modules/@fontsource/galada/files/galada-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <script type="module" src="./pedido.js"></script>
 </head>
-<body class="cadastro-page">
+<body class="cadastro-page" data-exige="cliente">
   <div id="bubbles-container" aria-hidden="true"></div>
 
   <header class="header">
@@ -26,7 +26,6 @@
       <a href="/#sabores" class="nav-item">Sabores</a>
       <a href="/#origem" class="nav-item">O Nosso Leite</a>
       <a href="/cliente/pedido.html" class="nav-item active">Encomendas</a>
-      <a href="/admin/index.html" class="nav-item">Painel Staff</a>
     </nav>
     <div class="header-actions">
       <a href="/cliente/cadastro.html" class="contact-btn" style="text-decoration: none; display: inline-flex; align-items: center;">Criar Conta</a>
@@ -41,34 +40,68 @@
       <div class="card-header">
         <span class="form-badge">Encomenda online</span>
         <h1 class="form-title">Faça o seu Pedido</h1>
-        <p class="form-subtitle">Identifique-se com o email da sua conta e escolha os sabores e tamanhos.</p>
+        <p class="form-subtitle">Escolha os sabores e tamanhos e confirme a sua encomenda.</p>
       </div>
 
-      <!-- Passo 1: identificação -->
-      <form id="form-identificar" class="form-grid passo" novalidate>
-        <label class="input-label" for="email">
-          <span>O seu email *</span>
-          <input type="email" id="email" class="input-field" placeholder="nome@exemplo.com" required autocomplete="email">
-        </label>
-        <button type="submit" id="btn-identificar" class="btn-submit"><span>Continuar</span></button>
-        <p class="card-footer-info">Ainda não tem conta? <a href="/cliente/cadastro.html">Criar conta &rarr;</a></p>
-      </form>
+      <div class="saudacao">
+        <span>Olá, <strong id="nome-cliente"></strong></span>
+        <a href="/cliente/meus-pedidos.html" class="btn-link">Os meus pedidos</a>
+      </div>
 
-      <!-- Passo 2: escolha dos produtos -->
-      <div id="passo-pedido" class="passo" hidden>
-        <div class="saudacao">
-          <span>Olá, <strong id="nome-cliente"></strong></span>
-          <button type="button" id="btn-trocar" class="btn-link">Não sou eu</button>
+      <ol class="etapas" aria-label="Etapas do pedido">
+        <li id="etapa-1" class="atual">1. Escolher</li>
+        <li id="etapa-2">2. Rever</li>
+        <li id="etapa-3">3. Concluído</li>
+      </ol>
+
+      <!-- Etapa 1: escolher produtos -->
+      <div id="passo-escolher" class="passo">
+        <div class="filtros">
+          <input type="search" id="pesquisa" class="input-field" placeholder="Pesquisar sabor..." aria-label="Pesquisar sabor" autocomplete="off">
+          <select id="filtro-tamanho" class="input-field" aria-label="Filtrar por tamanho">
+            <option value="">Todos os tamanhos</option>
+          </select>
         </div>
 
         <div id="catalogo"><p class="estado-texto">A carregar catálogo...</p></div>
 
-        <div class="resumo"><span>Total</span><strong id="total">0,00 MT</strong></div>
-        <button type="button" id="btn-enviar" class="btn-submit" disabled><span>Confirmar Pedido</span></button>
+        <div class="carrinho" id="carrinho" aria-live="polite">
+          <div class="carrinho-info">
+            <span id="carrinho-itens">Carrinho vazio</span>
+            <strong id="total">0,00 MT</strong>
+          </div>
+          <div class="carrinho-acoes">
+            <button type="button" id="btn-limpar" class="btn-fantasma" disabled>Limpar</button>
+            <button type="button" id="btn-rever" class="btn-submit" disabled><span>Rever pedido</span></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Etapa 2: rever e confirmar -->
+      <div id="passo-rever" class="passo" hidden>
+        <h2 class="subtitulo">Reveja o seu pedido</h2>
+        <div id="resumo-itens"></div>
+        <div class="resumo"><span>Total</span><strong id="total-rever">0,00 MT</strong></div>
+        <p class="nota">A fatura é gerada depois de a nossa equipa rever o pedido. O pagamento combina-se com o escritório.</p>
+        <div class="acoes-rever">
+          <button type="button" id="btn-voltar" class="btn-fantasma">&larr; Voltar e editar</button>
+          <button type="button" id="btn-enviar" class="btn-submit"><span>Confirmar pedido</span></button>
+        </div>
       </div>
 
       <div id="mensagem" class="mensagem-box" role="alert" hidden></div>
     </section>
   </main>
+
+  <!-- Pop-up de sucesso: grande, no meio do ecrã, depois de o pedido ser registado -->
+  <div id="popup-sucesso" class="popup-fundo" hidden>
+    <div class="popup-caixa" role="alertdialog" aria-modal="true" aria-labelledby="popup-titulo" aria-describedby="popup-texto">
+      <div class="popup-icone" aria-hidden="true">&#10003;</div>
+      <h2 id="popup-titulo" class="popup-titulo">Pedido feito com sucesso!</h2>
+      <p id="popup-texto" class="popup-texto"></p>
+      <p class="popup-contagem">A voltar à página inicial em <strong id="contagem">5</strong> s...</p>
+      <a href="/" id="popup-botao" class="btn-submit btn-como-link"><span>Ir para o início agora</span></a>
+    </div>
+  </div>
 </body>
 </html>

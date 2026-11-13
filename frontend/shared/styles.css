@@ -220,3 +220,38 @@ td button { margin-top: 0; padding: 6px 12px; font-size: 0.85rem; }
 .linha-item .rotulo-item { align-self: center; }
 .selo { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.8rem; background: var(--creme); border: 1px solid var(--borda); }
 .selo.final { background: var(--sucesso-bg); color: var(--sucesso-txt); border-color: transparent; }
+
+/* ---- Sessão no painel (nome + Sair) ---- */
+nav.menu-staff .sessao-staff { margin-left: auto; display: flex; align-items: center; gap: 10px; color: var(--creme); font-size: 0.85rem; }
+nav.menu-staff .btn-sair {
+  background: transparent; color: var(--creme); border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 20px; padding: 5px 14px; cursor: pointer; font: inherit;
+}
+nav.menu-staff .btn-sair:hover { background: rgba(255, 255, 255, 0.12); }
+.login-painel { max-width: 420px; margin: 48px auto; }
+
+/* ---- Dashboard ---- */
+.dash-titulo { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.dash-titulo h2 { margin: 0; }
+.btn-secundario { background: transparent; color: var(--castanho); border: 1px solid var(--borda); }
+.btn-secundario:hover:not(:disabled) { background: var(--borda); }
+.dash-secao { margin: 22px 0 10px; font-size: 1.05rem; }
+.dash-receita { background: var(--castanho); color: var(--creme); border-color: var(--castanho); }
+.dash-receita h3 { margin: 0 0 4px; font-size: 0.95rem; color: var(--dourado); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+.dash-valor { margin: 0; font-size: 2.4rem; font-weight: 700; }
+.dash-sub { color: var(--cinza); font-size: 0.9rem; margin: 6px 0 0; }
+.dash-receita .dash-sub { color: #d9c9b3; }
+.dash-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.dash-tile { background: #fff; border: 1px solid var(--borda); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; }
+.dash-tile span { color: var(--cinza); font-size: 0.85rem; }
+.dash-tile strong { font-size: 1.9rem; }
+.dash-tile small { color: var(--cinza); font-size: 0.75rem; }
+.dash-colunas { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 18px; }
+.dash-colunas .cartao h3 { margin-top: 0; }
+.dash-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.dash-item-topo { display: flex; justify-content: space-between; gap: 12px; }
+.dash-barra { height: 8px; border-radius: 4px; background: var(--borda); margin-top: 6px; overflow: hidden; }
+.dash-barra-cheia { height: 100%; background: var(--dourado); border-radius: 4px; }
+.dash-vazio { color: var(--cinza); }
+.dash-nota { color: var(--cinza); font-size: 0.8rem; margin-top: 16px; }
+nav.menu-staff { align-items: center; }

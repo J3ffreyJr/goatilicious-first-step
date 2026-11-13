@@ -57,6 +57,22 @@ public class FacturaService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Factura não encontrada"));
     }
 
+    /** Fatura de um cliente: se for de outro cliente responde 404 (não revela que existe). */
+    public Factura buscarDoCliente(Long id, Long clienteId) {
+        return exigirDono(buscarPorId(id), clienteId);
+    }
+
+    public Factura buscarPorPedidoDoCliente(Long idPedido, Long clienteId) {
+        return exigirDono(buscarPorPedido(idPedido), clienteId);
+    }
+
+    private Factura exigirDono(Factura factura, Long clienteId) {
+        if (!clienteId.equals(factura.getPedido().getCliente().getIdCliente())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Factura não encontrada");
+        }
+        return factura;
+    }
+
     /**
      * Revisão do funcionário: a lista recebida passa a ser a lista final de itens do pedido.
      * Produtos que já estavam no pedido mantêm o preço congelado; produtos novos usam o preço atual.

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Os meus pedidos | Goatilicious</title>
+  <meta name="description" content="Acompanhe os seus pedidos e faturas Goatilicious.">
+  <meta name="theme-color" content="#1c0e07">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+
+  <!-- Fonte Galada pré-carregada -->
+  <link rel="preload" href="/node_modules/@fontsource/galada/files/galada-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+
+  <script type="module" src="./meus-pedidos.js"></script>
+</head>
+<body class="cadastro-page" data-exige="cliente">
+  <div id="bubbles-container" aria-hidden="true"></div>
+
+  <!-- Cabeçalho oficial com navegação e logotipo em Galada -->
+  <header class="header">
+    <a href="/" class="logo" aria-label="Goatilicious Página Inicial">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+        <path d="M8 14C9.5 16 14.5 16 16 14M9 9H9.01M15 9H15.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
+      <span>Goatilicious</span>
+    </a>
+    <nav class="nav glass" id="site-nav" aria-label="Navegação Principal">
+      <a href="/" class="nav-item">Início</a>
+      <a href="/#sabores" class="nav-item">Sabores</a>
+      <a href="/#origem" class="nav-item">O Nosso Leite</a>
+      <a href="/cliente/pedido.html" class="nav-item">Encomendas</a>
+    </nav>
+    <div class="header-actions">
+      <a href="/" class="contact-btn" style="text-decoration: none; display: inline-flex; align-items: center;">Voltar ao Início</a>
+      <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Cartão Central Glassmorphism -->
+  <main class="cadastro-container">
+    <section class="glass-card larga">
+      <div class="card-header">
+        <span class="form-badge">A sua conta</span>
+        <h1 class="form-title">Os meus pedidos</h1>
+        <p class="form-subtitle">Acompanhe as suas encomendas e abra a fatura quando estiver pronta.</p>
+      </div>
+
+      <div id="lista-pedidos"><p class="estado-texto">A carregar pedidos...</p></div>
+
+      <div id="mensagem" class="mensagem-box" role="alert" hidden></div>
+
+      <div class="card-footer-info">
+        <p><a href="/cliente/pedido.html">Fazer um novo pedido &rarr;</a></p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

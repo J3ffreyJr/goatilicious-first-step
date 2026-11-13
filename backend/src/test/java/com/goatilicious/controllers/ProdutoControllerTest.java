@@ -1,5 +1,7 @@
 package com.goatilicious.controllers;
 
+import org.springframework.context.annotation.Import;
+import com.goatilicious.config.SecurityConfig;
 import com.goatilicious.enums.TamanhoProduto;
 import com.goatilicious.enums.TipoEstoque;
 import com.goatilicious.models.Produto;
@@ -19,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ProdutoController.class)
+@Import(SecurityConfig.class)
 class ProdutoControllerTest {
 
     @Autowired

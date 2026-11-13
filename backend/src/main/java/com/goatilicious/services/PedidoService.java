@@ -2,6 +2,7 @@ package com.goatilicious.services;
 
 import com.goatilicious.dtos.PedidoRequest;
 import com.goatilicious.dtos.PedidoRequest.ItemRequest;
+import com.goatilicious.enums.OrigemPedido;
 import com.goatilicious.models.Cliente;
 import com.goatilicious.models.ItemPedido;
 import com.goatilicious.models.Pedido;
@@ -67,5 +68,24 @@ public class PedidoService {
     public Pedido buscarPorId(Long id) {
         return pedidoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
+    }
+
+    /** Pedido feito pelo próprio cliente (portal): o cliente vem da sessão e a origem é sempre ONLINE. */
+    @Transactional
+    public Pedido registrarComoCliente(Long clienteId, PedidoRequest request) {
+        return registrar(new PedidoRequest(clienteId, OrigemPedido.ONLINE, request.itens()));
+    }
+
+    public List<Pedido> listarDoCliente(Long clienteId) {
+        return pedidoRepository.findByClienteIdCliente(clienteId);
+    }
+
+    /** Um pedido de outro cliente responde 404 (não revela que existe). */
+    public Pedido buscarDoCliente(Long id, Long clienteId) {
+        Pedido pedido = buscarPorId(id);
+        if (!clienteId.equals(pedido.getCliente().getIdCliente())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado");
+        }
+        return pedido;
     }
 }

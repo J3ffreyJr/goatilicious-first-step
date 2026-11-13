@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | Goatilicious</title>
+  <link rel="stylesheet" href="../shared/styles.css">
+</head>
+<body data-exige="staff">
+  <header class="topo">
+    <h1>Goatilicious</h1>
+    <p>Painel interno</p>
+  </header>
+  <nav class="menu-staff" aria-label="Navegação do painel">
+    <a href="dashboard.html" class="ativo">Dashboard</a>
+    <a href="index.html">Início</a>
+    <a href="clientes.html">Clientes</a>
+    <a href="gerir-pedidos.html">Pedidos</a>
+    <a href="facturas.html">Facturas</a>
+  </nav>
+
+  <main class="largo">
+    <div class="dash-titulo">
+      <h2>Dashboard</h2>
+      <button type="button" id="btn-atualizar" class="btn-secundario">Atualizar</button>
+    </div>
+    <div id="mensagem" class="mensagem" role="alert" hidden></div>
+
+    <section class="cartao dash-receita" aria-labelledby="t-receita">
+      <h3 id="t-receita">Receita gerada</h3>
+      <p class="dash-valor" id="receita-total">—</p>
+      <p class="dash-sub">
+        Paga <strong id="receita-paga">—</strong> · Pendente <strong id="receita-pendente">—</strong> ·
+        <span id="receita-facturas">—</span> facturas finais
+      </p>
+    </section>
+
+    <section aria-labelledby="t-pedidos">
+      <h3 id="t-pedidos" class="dash-secao">Pedidos</h3>
+      <div class="dash-tiles">
+        <div class="dash-tile"><span>Total</span><strong id="ped-total">—</strong></div>
+        <div class="dash-tile"><span>Já feitos</span><strong id="ped-feitos">—</strong><small>revistos + enviados</small></div>
+        <div class="dash-tile"><span>Pendentes</span><strong id="ped-pendentes">—</strong></div>
+        <div class="dash-tile"><span>Cancelados</span><strong id="ped-cancelados">—</strong></div>
+      </div>
+    </section>
+
+    <div class="dash-colunas">
+      <section class="cartao" aria-labelledby="t-produtos">
+        <h3 id="t-produtos">5 produtos mais pedidos</h3>
+        <ol class="dash-lista" id="lista-produtos"></ol>
+      </section>
+      <section class="cartao" aria-labelledby="t-clientes">
+        <h3 id="t-clientes">5 clientes com mais facturas</h3>
+        <ol class="dash-lista" id="lista-clientes"></ol>
+      </section>
+    </div>
+
+    <p class="dash-nota">Receita e facturas contam só facturas finais de pedidos não cancelados. Produtos contam pedidos não cancelados.</p>
+  </main>
+
+  <script src="../shared/config.js"></script>
+  <script src="../shared/auth.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>

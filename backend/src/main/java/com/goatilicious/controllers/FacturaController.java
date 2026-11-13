@@ -3,6 +3,8 @@ package com.goatilicious.controllers;
 import com.goatilicious.dtos.EnvioResposta;
 import com.goatilicious.dtos.FacturaResposta;
 import com.goatilicious.dtos.RevisaoRequest;
+import com.goatilicious.models.Factura;
+import com.goatilicious.security.Acesso;
 import com.goatilicious.services.EnvioFacturaService;
 import com.goatilicious.services.FacturaPdfService;
 import com.goatilicious.services.FacturaService;
@@ -11,6 +13,7 @@ import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,13 +48,16 @@ public class FacturaController {
     }
 
     @GetMapping("/facturas/{id}")
-    public FacturaResposta buscarPorId(@PathVariable Long id) {
-        return FacturaResposta.de(service.buscarPorId(id));
+    public FacturaResposta buscarPorId(@PathVariable Long id, Authentication autenticacao) {
+        return FacturaResposta.de(facturaVisivel(id, autenticacao));
     }
 
     @GetMapping("/pedidos/{id}/factura")
-    public FacturaResposta buscarPorPedido(@PathVariable Long id) {
-        return FacturaResposta.de(service.buscarPorPedido(id));
+    public FacturaResposta buscarPorPedido(@PathVariable Long id, Authentication autenticacao) {
+        Factura factura = Acesso.ehStaff(autenticacao)
+                ? service.buscarPorPedido(id)
+                : service.buscarPorPedidoDoCliente(id, Acesso.clienteIdObrigatorio(autenticacao));
+        return FacturaResposta.de(factura);
     }
 
     @PutMapping("/pedidos/{id}/revisao")
@@ -61,8 +67,8 @@ public class FacturaController {
 
     /** PDF da fatura final: o navegador abre-o para imprimir ou gravar. */
     @GetMapping("/facturas/{id}/pdf")
-    public ResponseEntity<byte[]> pdf(@PathVariable Long id) {
-        byte[] pdf = pdfService.gerar(service.buscarPorId(id));
+    public ResponseEntity<byte[]> pdf(@PathVariable Long id, Authentication autenticacao) {
+        byte[] pdf = pdfService.gerar(facturaVisivel(id, autenticacao));
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
                 .header(HttpHeaders.CONTENT_DISPOSITION,
@@ -78,5 +84,12 @@ public class FacturaController {
     @GetMapping("/facturas/{id}/envios")
     public List<EnvioResposta> listarEnvios(@PathVariable Long id) {
         return envioService.listarEnvios(id).stream().map(EnvioResposta::de).toList();
+    }
+
+    /** Staff vê qualquer fatura; o cliente só as suas (as de outros dão 404). */
+    private Factura facturaVisivel(Long id, Authentication autenticacao) {
+        return Acesso.ehStaff(autenticacao)
+                ? service.buscarPorId(id)
+                : service.buscarDoCliente(id, Acesso.clienteIdObrigatorio(autenticacao));
     }
 }

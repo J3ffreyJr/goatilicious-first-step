@@ -225,3 +225,5 @@ body.cadastro-page {
     border: 1px solid rgba(248, 113, 113, 0.4);
     color: #fca5a5;
 }
+
+.glass-card [hidden] { display: none !important; }

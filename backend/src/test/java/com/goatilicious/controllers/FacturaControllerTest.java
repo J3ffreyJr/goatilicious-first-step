@@ -1,5 +1,8 @@
 package com.goatilicious.controllers;
 
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.context.annotation.Import;
+import com.goatilicious.config.SecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goatilicious.dtos.PedidoRequest.ItemRequest;
 import com.goatilicious.dtos.RevisaoRequest;
@@ -43,6 +46,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(FacturaController.class)
+@Import(SecurityConfig.class)
+@WithMockUser(roles = "STAFF")
 class FacturaControllerTest {
 
     @Autowired

@@ -1,5 +1,6 @@
 package com.goatilicious.integration;
 
+import org.springframework.security.test.context.support.WithMockUser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /** Percorre o Sprint 2 de ponta a ponta: pedido -> fatura rascunho -> revisão -> fatura final. */
 @SpringBootTest
 @AutoConfigureMockMvc
+@WithMockUser(roles = "STAFF")
 class Sprint2IntegracaoTest {
 
     @Autowired

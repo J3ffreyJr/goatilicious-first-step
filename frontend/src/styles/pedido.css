@@ -60,5 +60,86 @@
     .linha-produto .preco { grid-column: 1; }
 }
 
+/* ---- Etapas, filtros, carrinho, revisão e conclusão ---- */
+.etapas {
+    display: flex; gap: 0.5rem; list-style: none; padding: 0; margin: 0 0 1.4rem;
+    font-family: var(--font-nav); font-size: 0.78rem;
+}
+.etapas li {
+    flex: 1; text-align: center; padding: 0.5rem 0.4rem; border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06); color: var(--muted-color); border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.etapas li.atual { background: rgba(223, 178, 113, 0.22); color: #fff; border-color: rgba(223, 178, 113, 0.6); }
+.etapas li.feita { color: var(--accent-pink); }
+
+.filtros { display: grid; grid-template-columns: 1fr 190px; gap: 0.7rem; margin-bottom: 1.2rem; }
+
+.carrinho {
+    position: sticky; bottom: 12px; z-index: 5; margin-top: 1.2rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+    padding: 0.8rem 1rem; border-radius: 16px;
+    background: rgba(30, 18, 10, 0.92); border: 1px solid rgba(223, 178, 113, 0.45);
+    backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+.carrinho-info { display: flex; flex-direction: column; font-family: var(--font-nav); color: #fff; }
+.carrinho-info span { font-size: 0.78rem; color: var(--muted-color); }
+.carrinho-info strong { font-size: 1.35rem; color: var(--accent-pink); }
+.carrinho-acoes { display: flex; align-items: center; gap: 0.6rem; }
+.carrinho-acoes .btn-submit { width: auto; padding-left: 1.4rem; padding-right: 1.4rem; margin: 0; }
+
+.btn-fantasma {
+    background: transparent; color: #fff; border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 999px; padding: 0.7rem 1.2rem; cursor: pointer; font-family: var(--font-nav);
+}
+.btn-fantasma:hover:not(:disabled) { background: rgba(255, 255, 255, 0.1); }
+.btn-fantasma:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.subtitulo { font-family: var(--font-heading); font-weight: 400; font-size: 1.7rem; color: #fff; margin: 0 0 1rem; }
+.nota { color: var(--muted-color); font-size: 0.88rem; line-height: 1.5; margin: 0.8rem 0; }
+.acoes-rever { display: flex; justify-content: space-between; gap: 0.8rem; flex-wrap: wrap; margin-top: 1rem; }
+.acoes-rever .btn-submit { width: auto; margin: 0; padding-left: 1.6rem; padding-right: 1.6rem; }
+.linha-produto .btn-remover {
+    background: none; border: none; color: var(--muted-color); cursor: pointer; text-decoration: underline;
+    font-family: var(--font-nav); font-size: 0.78rem;
+}
+.linha-produto .btn-remover:hover { color: #fff; }
+
+.sucesso-final { text-align: center; padding: 1rem 0 0.5rem; }
+.sucesso-icone {
+    width: 72px; height: 72px; margin: 0 auto 1rem; border-radius: 50%; font-size: 2.2rem; line-height: 72px;
+    background: rgba(223, 178, 113, 0.2); border: 2px solid rgba(223, 178, 113, 0.7); color: #fff;
+}
+.btn-como-link { display: inline-flex; justify-content: center; align-items: center; text-decoration: none; width: auto; padding: 0.8rem 1.8rem; }
+
+@media (max-width: 600px) {
+    .filtros { grid-template-columns: 1fr; }
+    .etapas { font-size: 0.7rem; }
+    .linha-produto .btn-remover { grid-column: 1 / -1; justify-self: end; }
+}
+
+/* ---- Pop-up de sucesso (centro do ecrã) ---- */
+body.popup-aberto { overflow: hidden; }
+.popup-fundo {
+    position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center;
+    padding: 1.2rem; background: rgba(10, 5, 2, 0.72); backdrop-filter: blur(6px);
+    animation: popup-fundo-entra 0.25s ease both;
+}
+.popup-caixa {
+    width: min(520px, 100%); text-align: center; padding: 2.6rem 2rem 2.2rem; border-radius: 28px;
+    background: linear-gradient(160deg, rgba(70, 44, 28, 0.98), rgba(34, 20, 12, 0.98));
+    border: 1px solid rgba(223, 178, 113, 0.55); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+    animation: popup-caixa-entra 0.4s cubic-bezier(0.2, 1.2, 0.4, 1) both;
+}
+.popup-icone {
+    width: 96px; height: 96px; margin: 0 auto 1.2rem; border-radius: 50%; font-size: 3rem; line-height: 92px;
+    color: #fff; background: rgba(223, 178, 113, 0.22); border: 3px solid rgba(223, 178, 113, 0.85);
+}
+.popup-titulo { font-family: var(--font-heading); font-weight: 400; font-size: 2.3rem; line-height: 1.15; color: #fff; margin: 0 0 0.8rem; }
+.popup-texto { font-family: var(--font-main); font-size: 1.05rem; color: #f1e6d6; margin: 0 0 1rem; }
+.popup-contagem { color: var(--muted-color); font-size: 0.88rem; margin: 0 0 1.4rem; }
+@keyframes popup-fundo-entra { from { opacity: 0; } to { opacity: 1; } }
+@keyframes popup-caixa-entra { from { opacity: 0; transform: scale(0.85) translateY(20px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .popup-fundo, .popup-caixa { animation: none; } }
+
 /* Garante que o atributo hidden vence os "display: flex" das classes acima. */
-.glass-card [hidden] { display: none !important; }
+.glass-card [hidden], .popup-fundo[hidden] { display: none !important; }
